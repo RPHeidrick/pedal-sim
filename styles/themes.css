@@ -1,0 +1,415 @@
+/*
+ * Looks (themes). Each phase of the site's design is kept as a look the visitor can pick
+ * from the "Look" menu in the header, so an earlier style is always one click away.
+ *
+ *   classic   Phase 8. The original clean look (the plain tokens in tokens.css)
+ *   workshop  Phase 9. A hand built pedal shop after dark: black bench, warm orange glow,
+ *             brushed metal, circuit traces. Figma: "Phase 9 · Workshop" page, and the
+ *             "Workshop (Phase 9)" mode of the Tokens collection.
+ *
+ * A look only changes tokens and surfaces; the layout and features are the same in all.
+ */
+
+/* ---------- Workshop (Phase 9) ---------------------------------------------------- */
+:root[data-theme="workshop"] {
+  --c-bg: #0b0908;
+  --c-panel: #15110e;
+  --c-panel-2: #1c1612;
+  --c-panel-3: #271e17;
+  --c-line: #2f251d;
+  --c-line-strong: #4a3a2c;
+  --c-text: #f4ece1;
+  --c-text-dim: #b3a594;
+  --c-text-faint: #7d6e5f;
+  --c-accent: #ff7a1a;
+  --c-accent-2: #ffc27a;
+  --c-accent-3: #c9b79f;
+  --c-grid: #221a14;
+  --c-axis: #4a3a2c;
+  --c-ok: #8fd48a;
+  --c-warn: #ffc247;
+  --c-err: #ff5a3c;
+  --c-info: #8fb3c9;
+  --hw-knob: #efe6d6;
+  --hw-ink: #120d0a;
+  --hw-led-on: #ff7a1a;
+  --hw-led-off: #3a1c0e;
+  --hw-cable: #0a0807;
+  --hw-chrome-hi: #f6f1ea;
+  --hw-chrome-mid: #b0a89e;
+  --hw-chrome-lo: #6d655c;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --font-display: "Big Shoulders Display", "Oswald", Impact, sans-serif;
+  --font-label: "Barlow Condensed", "Oswald", "Arial Narrow", sans-serif;
+  --glow: 0 0 24px color-mix(in srgb, var(--c-accent) 45%, transparent);
+  color-scheme: dark;
+}
+
+/* the bench: warm lamp glow and faint circuit traces */
+:root[data-theme="workshop"] body {
+  background-color: var(--c-bg);
+  background-image:
+    radial-gradient(1200px 600px at 12% -10%, rgba(255, 122, 26, 0.16), transparent 60%),
+    radial-gradient(900px 500px at 100% 30%, rgba(255, 122, 26, 0.07), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%23ff7a1a' stroke-opacity='.06' stroke-width='2'%3E%3Cpath d='M0 40h60l20 20h80M160 60v60l20 20h60M20 240v-60l30-30h50M120 0v30l-20 20v40M200 240v-40l-30-30v-50'/%3E%3C/g%3E%3Cg fill='%23ff7a1a' fill-opacity='.08'%3E%3Ccircle cx='160' cy='60' r='4'/%3E%3Ccircle cx='100' cy='90' r='4'/%3E%3Ccircle cx='50' cy='150' r='4'/%3E%3Ccircle cx='170' cy='170' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+:root[data-theme="workshop"] .site-header { background: color-mix(in srgb, var(--c-bg) 82%, transparent); backdrop-filter: blur(10px); border-bottom-color: var(--c-line); }
+:root[data-theme="workshop"] .brand { font-family: var(--font-display); font-weight: 900; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--c-accent); }
+:root[data-theme="workshop"] .site-nav a { font-family: var(--font-label); font-weight: 600; font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* headings */
+:root[data-theme="workshop"] .eyebrow { font-family: var(--font-label); font-size: 17px; letter-spacing: 0.18em; }
+:root[data-theme="workshop"] .hero h1 {
+  font-family: var(--font-display); font-weight: 900; text-transform: uppercase; letter-spacing: 0.005em;
+  font-size: clamp(40px, 5.2vw, 78px); line-height: 0.92; max-width: 17ch;
+}
+:root[data-theme="workshop"] .hero h1 em { font-style: normal; color: var(--c-accent); text-shadow: 0 0 40px rgba(255, 122, 26, 0.35); }
+:root[data-theme="workshop"] h2 { font-family: var(--font-label); font-size: 15px; letter-spacing: 0.16em; }
+:root[data-theme="workshop"] .section-title { font-family: var(--font-display); font-weight: 900; text-transform: uppercase; font-size: clamp(32px, 3.6vw, 48px); letter-spacing: 0.01em; }
+:root[data-theme="workshop"] .lib-col h3, :root[data-theme="workshop"] .fx-types h3 { font-family: var(--font-label); font-size: 15px; letter-spacing: 0.14em; }
+
+/* chunky, obvious buttons: they sit on a solid "base" and sink when pressed */
+:root[data-theme="workshop"] .btn-primary,
+:root[data-theme="workshop"] .power {
+  font-family: var(--font-label); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: linear-gradient(180deg, #ff9a3c, #f06a0c); border: 0; color: #1a0b02; border-radius: 14px;
+  box-shadow: 0 5px 0 #8a3500, 0 10px 26px rgba(255, 122, 26, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 0.08s, box-shadow 0.08s, filter 0.15s;
+}
+:root[data-theme="workshop"] .hero .btn-primary { font-size: 20px; padding: 14px 26px; }
+:root[data-theme="workshop"] .btn-primary:hover, :root[data-theme="workshop"] .power:hover { filter: brightness(1.08); transform: translateY(-1px); }
+:root[data-theme="workshop"] .btn-primary:active, :root[data-theme="workshop"] .power:active { transform: translateY(4px); box-shadow: 0 1px 0 #8a3500, 0 4px 12px rgba(255, 122, 26, 0.3), inset 0 2px 6px rgba(0, 0, 0, 0.25); }
+:root[data-theme="workshop"] .power { font-size: 17px; padding: 11px 20px 11px 16px; }
+:root[data-theme="workshop"] .power .power-led { background: #3a1c0e; }
+:root[data-theme="workshop"] .power[aria-pressed="true"] { background: linear-gradient(180deg, #2c231c, #1c1612); color: var(--c-accent); box-shadow: 0 5px 0 #000, 0 0 0 2px var(--c-accent), 0 0 28px rgba(255, 122, 26, 0.35); }
+:root[data-theme="workshop"] .power[aria-pressed="true"] .power-led { background: #ffb067; box-shadow: 0 0 14px 4px rgba(255, 122, 26, 0.9); }
+:root[data-theme="workshop"] .power[aria-pressed="false"] { animation: ws-power-call 2.2s ease-in-out infinite; }
+@keyframes ws-power-call { 0%, 100% { box-shadow: 0 5px 0 #8a3500, 0 10px 26px rgba(255, 122, 26, 0.35), 0 0 0 0 rgba(255, 122, 26, 0.5); } 50% { box-shadow: 0 5px 0 #8a3500, 0 10px 26px rgba(255, 122, 26, 0.35), 0 0 0 10px rgba(255, 122, 26, 0); } }
+:root[data-theme="workshop"] .btn-secondary,
+:root[data-theme="workshop"] .toggle,
+:root[data-theme="workshop"] .add,
+:root[data-theme="workshop"] .file-btn {
+  font-family: var(--font-label); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 15px;
+  background: var(--c-panel-3); border: 2px solid var(--c-accent); color: var(--c-accent); border-radius: 12px;
+  box-shadow: 0 4px 0 #000; transition: transform 0.08s, box-shadow 0.08s, background 0.15s, color 0.15s;
+}
+:root[data-theme="workshop"] .add { padding: 7px 14px; }
+:root[data-theme="workshop"] .btn-secondary:hover, :root[data-theme="workshop"] .toggle:hover, :root[data-theme="workshop"] .add:hover, :root[data-theme="workshop"] .file-btn:hover { background: var(--c-accent); color: #1a0b02; border-color: var(--c-accent); }
+:root[data-theme="workshop"] .btn-secondary:active, :root[data-theme="workshop"] .toggle:active, :root[data-theme="workshop"] .add:active, :root[data-theme="workshop"] .file-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+:root[data-theme="workshop"] .toggle.compare[aria-pressed="true"] { background: var(--c-accent); color: #1a0b02; }
+:root[data-theme="workshop"] .btn-link { font-family: var(--font-label); font-weight: 600; font-size: 17px; letter-spacing: 0.05em; }
+:root[data-theme="workshop"] .zoom { border-radius: 12px; }
+:root[data-theme="workshop"] .zoom button, :root[data-theme="workshop"] .rack-toggle, :root[data-theme="workshop"] .tool { font-family: var(--font-label); font-weight: 700; border-radius: 8px; box-shadow: 0 3px 0 #000; }
+:root[data-theme="workshop"] .zoom button:active:not(:disabled), :root[data-theme="workshop"] .rack-toggle:active, :root[data-theme="workshop"] .tool:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+:root[data-theme="workshop"] .tool { width: 32px; height: 30px; font-size: 17px; background: var(--c-panel-3); }
+:root[data-theme="workshop"] .tool:hover:not(:disabled) { border-color: var(--c-accent); color: var(--c-accent); }
+
+/* panels */
+:root[data-theme="workshop"] .rack, :root[data-theme="workshop"] .chain-wrap {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 120px), var(--c-panel);
+  border: 1px solid var(--c-line); border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+:root[data-theme="workshop"] .seg { border-radius: 12px; }
+:root[data-theme="workshop"] .seg button { font-family: var(--font-label); font-weight: 700; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 9px; }
+:root[data-theme="workshop"] .seg button[aria-selected="true"] { background: var(--c-accent); color: #1a0b02; box-shadow: 0 2px 0 #8a3500; }
+:root[data-theme="workshop"] .sample, :root[data-theme="workshop"] .preset, :root[data-theme="workshop"] .lib-card, :root[data-theme="workshop"] .fx-type, :root[data-theme="workshop"] .steps li { border-radius: 14px; }
+:root[data-theme="workshop"] .sample[aria-checked="true"], :root[data-theme="workshop"] .preset.selected { border-color: var(--c-accent); box-shadow: 0 0 0 1px var(--c-accent), 0 0 22px rgba(255, 122, 26, 0.18); }
+:root[data-theme="workshop"] .preset-name, :root[data-theme="workshop"] .lib-card h4, :root[data-theme="workshop"] .fx-type h4 { font-family: var(--font-label); font-weight: 700; font-size: 19px; letter-spacing: 0.03em; text-transform: uppercase; }
+:root[data-theme="workshop"] .lib-card:hover, :root[data-theme="workshop"] .preset:hover { transform: translateY(-2px); border-color: var(--c-accent); }
+:root[data-theme="workshop"] .meter { border-radius: 6px; }
+:root[data-theme="workshop"] .meter-fill { background: linear-gradient(90deg, #ffb067, var(--c-accent) 70%, #ff3d1f); box-shadow: 0 0 10px rgba(255, 122, 26, 0.5); }
+:root[data-theme="workshop"] .meter.vert .meter-fill { background: linear-gradient(0deg, #ffb067, var(--c-accent) 70%, #ff3d1f); }
+:root[data-theme="workshop"] .steps li::before { font-family: var(--font-display); font-weight: 900; font-size: 34px; }
+
+/* the pedalboard itself: a dark board with rails */
+:root[data-theme="workshop"] .chain {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 62px, rgba(0, 0, 0, 0.55) 62px 70px),
+    linear-gradient(180deg, #1a1511, #110d0b);
+  border-color: #2a211a; border-radius: 16px;
+  box-shadow: inset 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+}
+:root[data-theme="workshop"] .pedal-name { font-family: var(--font-display); font-weight: 900; font-size: 24px; letter-spacing: 0.02em; line-height: 0.95; text-shadow: none; }
+:root[data-theme="workshop"] .pedal-sub, :root[data-theme="workshop"] .knob-label { font-family: var(--font-label); letter-spacing: 0.1em; }
+:root[data-theme="workshop"] .knob-label { font-size: 12px; font-weight: 700; }
+:root[data-theme="workshop"] .jack { font-family: var(--font-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 14px; }
+:root[data-theme="workshop"] .tour-card, :root[data-theme="workshop"] .info-pop, :root[data-theme="workshop"] .sound-check, :root[data-theme="workshop"] .toast, :root[data-theme="workshop"] .menu-pop { border-radius: 18px; }
+:root[data-theme="workshop"] .tour-title { font-family: var(--font-display); font-weight: 900; font-size: 26px; text-transform: uppercase; letter-spacing: 0.01em; }
+:root[data-theme="workshop"] .tour-step { font-family: var(--font-label); font-size: 14px; letter-spacing: 0.16em; }
+
+/* ---------- Tube amp (Phase 10) ------------------------------------------------------
+ * A vintage amp: black tolex, cream piping, grille cloth, glowing tubes, chrome and
+ * chicken head knobs. Figma: "Phase 10 · Tube Amp" page, "Tube Amp (Phase 10)" mode. */
+:root[data-theme="tube"] {
+  --c-bg: #0d0c0b;
+  --c-panel: #171513;
+  --c-panel-2: #1f1c19;
+  --c-panel-3: #2a2621;
+  --c-line: #342f28;
+  --c-line-strong: #5b513f;
+  --c-text: #f2e8d5;
+  --c-text-dim: #bcae94;
+  --c-text-faint: #857a66;
+  --c-accent: #ff8c2a;
+  --c-accent-2: #ffcf8a;
+  --c-accent-3: #d9c7a3;
+  --c-grid: #26221d;
+  --c-axis: #5b513f;
+  --c-ok: #9bd08a;
+  --c-warn: #ffc85a;
+  --c-err: #ff5d3d;
+  --c-info: #9bb7c9;
+  --hw-knob: #141210;
+  --hw-ink: #16120d;
+  --hw-led-on: #ff8c2a;
+  --hw-led-off: #3a2210;
+  --hw-cable: #0b0a09;
+  --hw-chrome-hi: #fbfaf7;
+  --hw-chrome-mid: #b9b5ae;
+  --hw-chrome-lo: #6f6b64;
+  --piping: #d8c59c;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --font-display: "Yellowtail", "Brush Script MT", cursive;
+  --font-label: "Oswald", "Barlow Condensed", "Arial Narrow", sans-serif;
+  --tolex:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.035) 1px, transparent 1.4px) 0 0 / 4px 4px,
+    radial-gradient(circle at 3px 3px, rgba(0, 0, 0, 0.35) 1px, transparent 1.4px) 0 0 / 4px 4px;
+  color-scheme: dark;
+}
+:root[data-theme="tube"] body {
+  background: var(--tolex), radial-gradient(1100px 520px at 80% -8%, rgba(255, 140, 42, 0.13), transparent 60%), var(--c-bg);
+  background-attachment: fixed;
+}
+:root[data-theme="tube"] .site-header { background: var(--tolex), linear-gradient(180deg, #151311, #0d0c0b); border-bottom: 2px solid var(--piping); box-shadow: 0 2px 0 #000; }
+:root[data-theme="tube"] .brand { font-family: var(--font-display); font-weight: 400; font-size: 34px; letter-spacing: 0; color: var(--hw-chrome-hi); text-shadow: 0 1px 0 #000, 0 0 18px rgba(255, 255, 255, 0.15); }
+:root[data-theme="tube"] .brand svg { display: none; }
+:root[data-theme="tube"] .site-nav a { font-family: var(--font-label); font-weight: 500; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; }
+:root[data-theme="tube"] .eyebrow { font-family: var(--font-label); font-size: 15px; letter-spacing: 0.24em; color: var(--piping); }
+:root[data-theme="tube"] .hero h1 { font-family: var(--font-label); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; font-size: clamp(36px, 4.6vw, 66px); line-height: 1.02; max-width: 18ch; }
+:root[data-theme="tube"] .hero h1 em { font-family: var(--font-display); font-weight: 400; text-transform: none; font-size: 1.28em; letter-spacing: 0; color: var(--c-accent); text-shadow: 0 0 30px rgba(255, 140, 42, 0.55); }
+:root[data-theme="tube"] h2 { font-family: var(--font-label); font-weight: 500; font-size: 14px; letter-spacing: 0.2em; color: var(--piping); }
+:root[data-theme="tube"] .section-title { font-family: var(--font-display); font-weight: 400; text-transform: none; font-size: clamp(40px, 4.6vw, 60px); letter-spacing: 0; color: var(--c-text); }
+:root[data-theme="tube"] .lib-col h3, :root[data-theme="tube"] .fx-types h3 { font-family: var(--font-label); font-weight: 500; letter-spacing: 0.16em; color: var(--piping); }
+/* panels: tolex with cream piping, like an amp's front */
+:root[data-theme="tube"] .rack, :root[data-theme="tube"] .chain-wrap, :root[data-theme="tube"] .deck {
+  background: var(--tolex), linear-gradient(180deg, #1b1916, #121110);
+  border: 2px solid var(--piping); border-radius: 14px;
+  box-shadow: 0 0 0 3px #000, 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+/* the board sits in front of grille cloth */
+:root[data-theme="tube"] .chain {
+  background:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.35) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.35) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg, #4a3a28, #3a2d1f);
+  border: 2px solid #0b0a09; border-radius: 10px; box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7);
+}
+/* chrome and cream controls */
+:root[data-theme="tube"] .btn-primary, :root[data-theme="tube"] .power {
+  font-family: var(--font-label); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 8px;
+  background: linear-gradient(180deg, #f6ecd6, #d8c59c); color: #16120d; border: 1px solid #fff5e0;
+  box-shadow: 0 4px 0 #6b5a3b, 0 8px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff;
+  transition: transform 0.08s, box-shadow 0.08s, filter 0.15s;
+}
+:root[data-theme="tube"] .hero .btn-primary { font-size: 18px; padding: 13px 24px; }
+:root[data-theme="tube"] .btn-primary:hover, :root[data-theme="tube"] .power:hover { filter: brightness(1.05); }
+:root[data-theme="tube"] .btn-primary:active, :root[data-theme="tube"] .power:active { transform: translateY(3px); box-shadow: 0 1px 0 #6b5a3b, 0 3px 8px rgba(0, 0, 0, 0.5); }
+:root[data-theme="tube"] .power { font-size: 16px; padding: 10px 18px 10px 12px; }
+:root[data-theme="tube"] .power .power-led { width: 18px; height: 18px; background: radial-gradient(circle at 40% 35%, #7a3a18, #3a1a08); box-shadow: 0 0 0 3px #b9b5ae, 0 0 0 4px #333; }
+:root[data-theme="tube"] .power[aria-pressed="true"] { background: linear-gradient(180deg, #2a2621, #171513); color: var(--c-accent-2); border-color: var(--piping); }
+:root[data-theme="tube"] .power[aria-pressed="true"] .power-led { background: radial-gradient(circle at 40% 35%, #fff2d8, #ff8c2a 45%, #b44a00); box-shadow: 0 0 0 3px #b9b5ae, 0 0 0 4px #333, 0 0 20px 6px rgba(255, 140, 42, 0.7); }
+:root[data-theme="tube"] .power[aria-pressed="false"] { animation: none; }
+:root[data-theme="tube"] .btn-secondary, :root[data-theme="tube"] .toggle, :root[data-theme="tube"] .add, :root[data-theme="tube"] .file-btn {
+  font-family: var(--font-label); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; font-size: 14px;
+  background: linear-gradient(180deg, #2a2621, #1a1815); border: 1px solid var(--piping); color: var(--c-text); border-radius: 8px;
+  box-shadow: 0 3px 0 #000; transition: transform 0.08s, box-shadow 0.08s, background 0.15s, color 0.15s;
+}
+:root[data-theme="tube"] .btn-secondary:hover, :root[data-theme="tube"] .toggle:hover, :root[data-theme="tube"] .add:hover, :root[data-theme="tube"] .file-btn:hover { background: var(--piping); color: #16120d; }
+:root[data-theme="tube"] .btn-secondary:active, :root[data-theme="tube"] .toggle:active, :root[data-theme="tube"] .add:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+:root[data-theme="tube"] .toggle.compare[aria-pressed="true"], :root[data-theme="tube"] .deck-tools .toggle[aria-pressed="true"] { background: var(--c-accent); color: #16120d; border-color: var(--c-accent); }
+:root[data-theme="tube"] .seg { background: #0b0a09; border-color: var(--piping); }
+:root[data-theme="tube"] .seg button { font-family: var(--font-label); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+:root[data-theme="tube"] .seg button[aria-selected="true"] { background: linear-gradient(180deg, #f6ecd6, #d8c59c); color: #16120d; }
+:root[data-theme="tube"] .sample[aria-checked="true"], :root[data-theme="tube"] .preset.selected { border-color: var(--piping); box-shadow: 0 0 0 1px var(--piping), 0 0 20px rgba(255, 140, 42, 0.15); }
+:root[data-theme="tube"] .preset-name, :root[data-theme="tube"] .lib-card h4, :root[data-theme="tube"] .fx-type h4 { font-family: var(--font-label); font-weight: 500; font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; }
+:root[data-theme="tube"] .meter-fill { background: linear-gradient(90deg, #ffcf8a, var(--c-accent) 70%, #ff4a1f); box-shadow: 0 0 10px rgba(255, 140, 42, 0.5); }
+:root[data-theme="tube"] .meter.vert .meter-fill { background: linear-gradient(0deg, #ffcf8a, var(--c-accent) 70%, #ff4a1f); }
+:root[data-theme="tube"] .steps li::before { font-family: var(--font-display); font-size: 36px; font-weight: 400; }
+:root[data-theme="tube"] .tour-title { font-family: var(--font-display); font-weight: 400; font-size: 32px; }
+:root[data-theme="tube"] .jack { font-family: var(--font-label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--piping); }
+/* chicken head knobs: black bakelite with a cream pointer */
+:root[data-theme="tube"] .knob-body { fill: #141210; stroke: #3a352e; stroke-width: 1.5; }
+:root[data-theme="tube"] .pedal .knob-pointer { stroke: #f2e8d5; stroke-width: 4.5; }
+:root[data-theme="tube"] .pedal-name { font-family: var(--font-label); font-weight: 600; letter-spacing: 0.08em; }
+:root[data-theme="tube"] .pedal-sub, :root[data-theme="tube"] .knob-label { font-family: var(--font-label); letter-spacing: 0.1em; }
+:root[data-theme="tube"] .pad b { font-family: var(--font-label); font-weight: 600; }
+:root[data-theme="tube"] .tuner-note { font-family: var(--font-label); font-weight: 600; }
+
+/* glowing tubes behind the hero (only in this look); they brighten with the signal */
+.tubes { display: none; }
+:root[data-theme="tube"] .hero { position: relative; }
+:root[data-theme="tube"] .tubes {
+  display: flex; gap: 26px; align-items: flex-end; position: absolute; right: clamp(0px, 6vw, 110px); top: 64px; pointer-events: none; transform: scale(1.25); transform-origin: top right;
+}
+.tube {
+  --glow: calc(0.55 + var(--sig, 0) * 0.9);
+  position: relative; width: 44px; height: 118px; border-radius: 22px 22px 8px 8px;
+  background:
+    radial-gradient(60% 30% at 50% 62%, rgba(255, 150, 60, calc(var(--glow) * 0.9)), transparent 70%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.22) 30%, rgba(255, 255, 255, 0.04) 60%, rgba(255, 255, 255, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 calc(18px + var(--sig, 0) * 40px) rgba(255, 140, 42, calc(var(--glow) * 0.45)), inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+  animation: tube-flicker 3.2s infinite;
+}
+.tube:nth-child(2) { height: 136px; animation-delay: 0.7s; }
+.tube:nth-child(3) { animation-delay: 1.4s; }
+.tube::before { /* plate and filament */
+  content: ""; position: absolute; left: 12px; right: 12px; top: 34px; height: 46px; border-radius: 3px;
+  background: linear-gradient(90deg, #3a3531, #6b645b 40%, #3a3531); box-shadow: 0 0 12px rgba(255, 140, 42, calc(var(--glow) * 0.8));
+}
+.tube::after { /* base */
+  content: ""; position: absolute; left: -4px; right: -4px; bottom: -14px; height: 16px; border-radius: 4px; background: linear-gradient(180deg, #2a2621, #0b0a09);
+}
+@keyframes tube-flicker { 0%, 100% { filter: brightness(1); } 47% { filter: brightness(1.12); } 50% { filter: brightness(0.94); } 53% { filter: brightness(1.08); } }
+@media (max-width: 900px) { :root[data-theme="tube"] .tubes { display: none; } }
+
+/* ---------- Arcade (Phase 11) ----------------------------------------------------------
+ * An 80s arcade cabinet with a few pinball touches (chrome rails, playfield lights, a TILT
+ * light when the limiter works), still orange and black first. Neon, CRT scanlines,
+ * chunky arcade buttons. Figma: "Phase 11 · Arcade" page, "Arcade (Phase 11)" mode. */
+:root[data-theme="arcade"] {
+  --c-bg: #07060a;
+  --c-panel: #110f16;
+  --c-panel-2: #18151f;
+  --c-panel-3: #221e2b;
+  --c-line: #2c2638;
+  --c-line-strong: #4a3f5e;
+  --c-text: #fff4e6;
+  --c-text-dim: #c3b6c9;
+  --c-text-faint: #8a7f93;
+  --c-accent: #ff6a00;
+  --c-accent-2: #29e7ff;
+  --c-accent-3: #ff2e88;
+  --c-grid: #1f1a29;
+  --c-axis: #4a3f5e;
+  --c-ok: #7dff7a;
+  --c-warn: #ffe53b;
+  --c-err: #ff3b5c;
+  --c-info: #29e7ff;
+  --hw-knob: #fff4e6;
+  --hw-ink: #0b0710;
+  --hw-led-on: #ff6a00;
+  --hw-led-off: #3a1a08;
+  --hw-cable: #0b0710;
+  --hw-chrome-hi: #ffffff;
+  --hw-chrome-mid: #c8cbd4;
+  --hw-chrome-lo: #6d7180;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --font-display: "Audiowide", "Arial Black", sans-serif;
+  --font-label: "Audiowide", "Arial Black", sans-serif;
+  --font-pixel: "Press Start 2P", "Courier New", monospace;
+  --neon: 0 0 6px rgba(255, 106, 0, 0.9), 0 0 18px rgba(255, 106, 0, 0.6), 0 0 38px rgba(255, 106, 0, 0.35);
+  color-scheme: dark;
+}
+:root[data-theme="arcade"] body {
+  background:
+    radial-gradient(900px 500px at 15% -5%, rgba(255, 106, 0, 0.18), transparent 60%),
+    radial-gradient(800px 500px at 100% 20%, rgba(255, 46, 136, 0.09), transparent 60%),
+    radial-gradient(700px 500px at 60% 110%, rgba(41, 231, 255, 0.07), transparent 60%),
+    var(--c-bg);
+  background-attachment: fixed;
+}
+/* CRT scanlines over everything, very light, and never in the way of clicks */
+:root[data-theme="arcade"] body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 70;
+  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+:root[data-theme="arcade"] .site-header { background: rgba(7, 6, 10, 0.85); backdrop-filter: blur(8px); border-bottom: 2px solid var(--c-accent); box-shadow: 0 0 18px rgba(255, 106, 0, 0.45); }
+:root[data-theme="arcade"] .brand { font-family: var(--font-display); font-size: 24px; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; text-shadow: var(--neon); }
+:root[data-theme="arcade"] .brand svg { filter: drop-shadow(0 0 6px var(--c-accent)); }
+:root[data-theme="arcade"] .site-nav a { font-family: var(--font-pixel); font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; line-height: 2; }
+:root[data-theme="arcade"] .site-nav a:hover, :root[data-theme="arcade"] .site-nav a[aria-current] { color: var(--c-accent); text-shadow: var(--neon); }
+:root[data-theme="arcade"] .eyebrow { font-family: var(--font-pixel); font-size: 12px; letter-spacing: 0.06em; color: var(--c-accent-2); text-shadow: 0 0 10px rgba(41, 231, 255, 0.7); }
+:root[data-theme="arcade"] .hero h1 { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(34px, 4.8vw, 70px); line-height: 1.02; letter-spacing: 0.01em; max-width: 17ch; color: #fff; }
+:root[data-theme="arcade"] .hero h1 em { font-style: normal; color: #fff; text-shadow: var(--neon); animation: neon-flicker 5s infinite; }
+@keyframes neon-flicker { 0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; } 20%, 63% { opacity: 0.55; } }
+:root[data-theme="arcade"] h2 { font-family: var(--font-pixel); font-weight: 400; font-size: 11px; letter-spacing: 0.06em; color: var(--c-accent); line-height: 1.6; }
+:root[data-theme="arcade"] .section-title { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(30px, 3.4vw, 46px); color: #fff; text-shadow: 0 0 20px rgba(255, 106, 0, 0.45); }
+:root[data-theme="arcade"] .lib-col h3, :root[data-theme="arcade"] .fx-types h3 { font-family: var(--font-pixel); font-weight: 400; font-size: 10px; line-height: 1.8; color: var(--c-accent-2); }
+/* arcade buttons: glossy domes that sink when pressed */
+:root[data-theme="arcade"] .btn-primary, :root[data-theme="arcade"] .power {
+  font-family: var(--font-display); font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: #1a0800; border: 0; border-radius: 999px;
+  background: radial-gradient(120% 90% at 50% 10%, #ffd0a8 0%, #ff8a2a 30%, #ff6a00 55%, #c24000 100%);
+  box-shadow: 0 6px 0 #6b2200, 0 0 24px rgba(255, 106, 0, 0.55), inset 0 -4px 8px rgba(0, 0, 0, 0.25), inset 0 2px 0 rgba(255, 255, 255, 0.55);
+  transition: transform 0.07s, box-shadow 0.07s, filter 0.15s;
+}
+:root[data-theme="arcade"] .hero .btn-primary { font-size: 18px; padding: 16px 30px; }
+:root[data-theme="arcade"] .btn-primary:hover, :root[data-theme="arcade"] .power:hover { filter: brightness(1.1) saturate(1.1); }
+:root[data-theme="arcade"] .btn-primary:active, :root[data-theme="arcade"] .power:active { transform: translateY(5px); box-shadow: 0 1px 0 #6b2200, 0 0 14px rgba(255, 106, 0, 0.5), inset 0 3px 8px rgba(0, 0, 0, 0.35); }
+:root[data-theme="arcade"] .power { font-size: 15px; padding: 11px 20px 11px 14px; }
+:root[data-theme="arcade"] .power[aria-pressed="false"] .power-label::after { content: "  ▸ PRESS START"; font-family: var(--font-pixel); font-size: 8px; letter-spacing: 0; margin-left: 6px; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+:root[data-theme="arcade"] .power[aria-pressed="false"] { animation: none; }
+:root[data-theme="arcade"] .power[aria-pressed="true"] { background: radial-gradient(120% 90% at 50% 10%, #3a2f4a, #18151f 70%); color: var(--c-accent); box-shadow: 0 6px 0 #000, 0 0 0 2px var(--c-accent), 0 0 26px rgba(255, 106, 0, 0.5); }
+:root[data-theme="arcade"] .btn-secondary, :root[data-theme="arcade"] .toggle, :root[data-theme="arcade"] .add, :root[data-theme="arcade"] .file-btn {
+  font-family: var(--font-display); font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; font-size: 13px; border-radius: 999px;
+  background: #0b0910; border: 2px solid var(--c-accent-2); color: var(--c-accent-2);
+  box-shadow: 0 4px 0 #000, 0 0 12px rgba(41, 231, 255, 0.35), inset 0 0 10px rgba(41, 231, 255, 0.15); transition: transform 0.07s, box-shadow 0.07s, background 0.15s, color 0.15s;
+}
+:root[data-theme="arcade"] .btn-secondary:hover, :root[data-theme="arcade"] .toggle:hover, :root[data-theme="arcade"] .add:hover, :root[data-theme="arcade"] .file-btn:hover { background: var(--c-accent-2); color: #041014; }
+:root[data-theme="arcade"] .btn-secondary:active, :root[data-theme="arcade"] .toggle:active, :root[data-theme="arcade"] .add:active { transform: translateY(3px); box-shadow: 0 1px 0 #000; }
+:root[data-theme="arcade"] .toggle.compare[aria-pressed="true"], :root[data-theme="arcade"] .deck-tools .toggle[aria-pressed="true"] { background: var(--c-accent-3); border-color: var(--c-accent-3); color: #fff; box-shadow: 0 4px 0 #000, 0 0 18px rgba(255, 46, 136, 0.6); }
+:root[data-theme="arcade"] .zoom button, :root[data-theme="arcade"] .rack-toggle, :root[data-theme="arcade"] .tool { font-family: var(--font-pixel); font-size: 10px; border-radius: 8px; box-shadow: 0 3px 0 #000; }
+/* cabinet panels with chrome rails, like a pinball playfield's edges */
+:root[data-theme="arcade"] .rack, :root[data-theme="arcade"] .chain-wrap, :root[data-theme="arcade"] .deck {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 100px), var(--c-panel);
+  border: 3px solid transparent; border-radius: 22px;
+  background-clip: padding-box;
+  box-shadow: 0 0 0 3px #7c8190, 0 0 0 5px #1b1d24, 0 0 0 6px #c8cbd4, 0 0 30px rgba(255, 106, 0, 0.18), 0 22px 50px rgba(0, 0, 0, 0.6);
+}
+/* the playfield: dark with lit arrows pointing along the signal path */
+:root[data-theme="arcade"] .chain {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath d='M50 22l12 8-12 8z' fill='%23ff6a00' fill-opacity='.12'/%3E%3Ccircle cx='100' cy='12' r='2' fill='%2329e7ff' fill-opacity='.18'/%3E%3Ccircle cx='18' cy='50' r='2' fill='%23ff2e88' fill-opacity='.18'/%3E%3C/svg%3E"),
+    radial-gradient(120% 90% at 50% 50%, #17121f, #0b0910);
+  border: 2px solid #2c2638; border-radius: 16px; box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+:root[data-theme="arcade"] .seg { background: #07060a; border-color: var(--c-line-strong); border-radius: 999px; }
+:root[data-theme="arcade"] .seg button { font-family: var(--font-ui); font-weight: 800; font-size: 12px; letter-spacing: 0.02em; text-transform: uppercase; border-radius: 999px; }
+:root[data-theme="arcade"] .seg button[aria-selected="true"] { background: var(--c-accent); color: #1a0800; box-shadow: 0 0 14px rgba(255, 106, 0, 0.6); }
+:root[data-theme="arcade"] .sample[aria-checked="true"], :root[data-theme="arcade"] .preset.selected { border-color: var(--c-accent); box-shadow: 0 0 0 1px var(--c-accent), 0 0 24px rgba(255, 106, 0, 0.35); }
+:root[data-theme="arcade"] .preset-name, :root[data-theme="arcade"] .lib-card h4, :root[data-theme="arcade"] .fx-type h4 { font-family: var(--font-display); font-weight: 400; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; }
+:root[data-theme="arcade"] .lib-card:hover, :root[data-theme="arcade"] .preset:hover { border-color: var(--c-accent-2); box-shadow: 0 0 20px rgba(41, 231, 255, 0.25); transform: translateY(-2px); }
+/* score style readouts */
+:root[data-theme="arcade"] .rack output, :root[data-theme="arcade"] .readout, :root[data-theme="arcade"] .zoom .zoom-level { font-family: var(--font-pixel); font-size: 9px; letter-spacing: 0; color: var(--c-warn); text-shadow: 0 0 6px rgba(255, 229, 59, 0.6); }
+:root[data-theme="arcade"] .meter { border-radius: 4px; border-color: #2c2638; background: #050409; }
+:root[data-theme="arcade"] .meter-fill { background: repeating-linear-gradient(90deg, var(--c-ok) 0 6px, transparent 6px 8px), linear-gradient(90deg, var(--c-ok), var(--c-warn) 75%, var(--c-err)); background-blend-mode: multiply; box-shadow: 0 0 10px rgba(125, 255, 122, 0.5); }
+:root[data-theme="arcade"] .meter.vert .meter-fill { background: repeating-linear-gradient(0deg, var(--c-ok) 0 6px, transparent 6px 8px); }
+:root[data-theme="arcade"] .steps li::before { font-family: var(--font-pixel); font-size: 14px; color: var(--c-accent-3); text-shadow: 0 0 10px rgba(255, 46, 136, 0.7); }
+:root[data-theme="arcade"] .tour-title { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: 22px; }
+:root[data-theme="arcade"] .tour-step { font-family: var(--font-pixel); font-size: 10px; }
+:root[data-theme="arcade"] .jack { font-family: var(--font-pixel); font-size: 9px; color: var(--c-accent-2); }
+:root[data-theme="arcade"] .pedal-name { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; }
+:root[data-theme="arcade"] .pedal-sub, :root[data-theme="arcade"] .knob-label { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; }
+:root[data-theme="arcade"] .pedal:hover { box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55), 0 0 0 2px var(--c-accent-2), 0 0 26px rgba(41, 231, 255, 0.35); }
+/* pinball bumper ring around the footswitch */
+:root[data-theme="arcade"] .footswitch { box-shadow: 0 0 0 4px #fff4e6, 0 0 0 7px var(--c-accent-3), 0 0 18px 6px rgba(255, 46, 136, 0.45), 0 3px 6px rgba(0, 0, 0, 0.5); }
+:root[data-theme="arcade"] .pedal.stomp .footswitch { box-shadow: 0 0 0 4px #fff, 0 0 0 9px var(--c-accent-3), 0 0 36px 14px rgba(255, 46, 136, 0.8); }
+:root[data-theme="arcade"] .pad b, :root[data-theme="arcade"] .tuner-note { font-family: var(--font-display); font-weight: 400; }
+:root[data-theme="arcade"] .ws-say input { font-family: var(--font-display); font-size: 16px; }
+/* TILT: lights up in the chain header while the safety limiter is turning the sound down */
+.tilt { display: none; }
+:root[data-theme="arcade"] .tilt {
+  display: inline-block; font-family: var(--font-pixel); font-size: 10px; padding: 6px 8px; border-radius: 6px;
+  color: #8a3346; background: #1c0810; border: 2px solid #4a1422; letter-spacing: 0.1em;
+}
+:root[data-theme="arcade"] body.limiting .tilt { color: #fff; background: var(--c-err); border-color: #ffb3c0; box-shadow: 0 0 18px var(--c-err); animation: blink 0.5s steps(2) infinite; }

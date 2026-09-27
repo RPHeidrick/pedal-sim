@@ -1,0 +1,5 @@
+out/
+node_modules
+*.cpuprofile
+.DS_Store
+diagnostics/

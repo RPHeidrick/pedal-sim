@@ -1,0 +1,135 @@
+/*
+ * Play: the Digital guitar deck, the "Plug in your guitar" setup and its tuner.
+ * Figma: "Phase 10 · Tube Amp" page (Digital guitar, Guitar setup frames).
+ */
+.seg { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seg button { overflow: hidden; text-overflow: ellipsis; }
+.seg button { padding-left: 2px; padding-right: 2px; }
+.gs-open { width: 100%; }
+
+/* ---------- Digital guitar deck ------------------------------------------------------ */
+.deck {
+  margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  background: var(--c-panel); border: 1px solid var(--c-line); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+.deck[hidden] { display: none; }
+.deck-head { display: flex; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap; align-items: flex-end; margin-bottom: var(--sp-3); }
+.deck-head h2 { margin-bottom: 4px; }
+.deck-head p { margin: 0; font-size: 13px; max-width: 60ch; }
+.deck-tools { display: flex; gap: var(--sp-3); align-items: center; flex-wrap: wrap; }
+.deck-tools .field.inline { gap: 8px; }
+.deck-tempo { min-width: 170px; }
+.deck-tempo input { width: 110px; }
+.deck-tools .toggle { min-width: 132px; font-weight: 700; }
+.deck-tools .toggle[aria-pressed="true"] { background: var(--c-accent); color: var(--hw-ink); border-color: var(--c-accent); }
+.pads { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; margin-bottom: var(--sp-4); }
+.pad {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 76px;
+  border-radius: 14px; cursor: pointer; color: var(--c-text); user-select: none; touch-action: manipulation;
+  background: linear-gradient(180deg, var(--c-panel-3), var(--c-panel-2)); border: 1px solid var(--c-line-strong);
+  box-shadow: 0 5px 0 #000, inset 0 1px 0 rgba(255, 255, 255, 0.06); transition: transform 0.06s, box-shadow 0.06s, border-color 0.15s;
+}
+.pad b { font-size: 24px; font-weight: 800; line-height: 1; font-family: var(--font-display, var(--font-ui)); }
+.pad small { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-text-dim); }
+.pad kbd { position: absolute; top: 5px; right: 7px; font: 500 10px var(--font-mono); color: var(--c-text-faint); }
+.pad.power-chord b { color: var(--c-accent-2); }
+.pad:hover { border-color: var(--c-accent); }
+.pad:active, .pad.hit { transform: translateY(4px); box-shadow: 0 1px 0 #000, inset 0 2px 6px rgba(0, 0, 0, 0.4); }
+.pad.hit { animation: pad-hit 0.25s ease-out; }
+@keyframes pad-hit { 0% { background: var(--c-accent); } }
+.pad.on { border-color: var(--c-accent); box-shadow: 0 5px 0 #000, 0 0 0 1px var(--c-accent), 0 0 20px color-mix(in srgb, var(--c-accent) 35%, transparent); }
+
+.fretboard {
+  --fret-w: minmax(38px, 1fr);
+  position: relative; padding: 10px 0 0; border-radius: 12px; overflow-x: auto;
+  background:
+    linear-gradient(90deg, #2a1a10 0 56px, transparent 56px),
+    linear-gradient(180deg, #3b2616, #2b1b10);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+.string-row { display: grid; grid-template-columns: 56px repeat(15, var(--fret-w)); position: relative; min-width: 700px; }
+.string-row::before { /* the string itself */
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: var(--gauge); transform: translateY(-50%);
+  background: linear-gradient(180deg, #f3eee6, #9b948a); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.6); pointer-events: none;
+}
+.fret {
+  position: relative; height: 30px; border: 0; padding: 0; cursor: pointer; background: none;
+  border-right: 3px solid #c9c2b8; /* fret wire */
+}
+.fret.open { border-right: 6px solid #efe6d6; } /* the nut */
+.fret::after { /* note name on hover */
+  content: attr(data-note); position: absolute; inset: 4px 6px; display: grid; place-items: center; border-radius: 999px;
+  font: 700 11px var(--font-ui); color: #1a0b02; background: var(--c-accent-2); opacity: 0; transform: scale(0.6); transition: opacity 0.12s, transform 0.12s;
+}
+.fret:hover::after, .fret:focus-visible::after { opacity: 0.9; transform: none; }
+.fret.ring::after { animation: fret-ring 0.9s ease-out; }
+@keyframes fret-ring { 0% { opacity: 1; transform: scale(1.15); background: var(--c-accent); box-shadow: 0 0 18px var(--c-accent); } 100% { opacity: 0; transform: scale(0.9); } }
+.fret-marks { display: grid; grid-template-columns: 56px repeat(15, var(--fret-w)); min-width: 700px; color: #d8cfc2; font-size: 14px; text-align: center; padding: 2px 0 4px; }
+.deck-credit { margin-top: 10px; }
+
+/* ---------- Plug in your guitar ------------------------------------------------------- */
+.guitar-setup { width: min(640px, calc(100vw - 24px)); }
+.gs-head { display: flex; align-items: center; gap: 8px; }
+.gs-head h3 { margin: 0; }
+.gs-steps { list-style: none; display: flex; gap: 6px; padding: 0; margin: 14px 0 16px; }
+.gs-steps li { flex: 1; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius-md); background: var(--c-bg); border: 1px solid var(--c-line); font-size: 13px; color: var(--c-text-dim); }
+.gs-steps li span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--c-panel-3); font: 700 12px var(--font-mono); }
+.gs-steps li.on { border-color: var(--c-accent); color: var(--c-text); }
+.gs-steps li.on span { background: var(--c-accent); color: var(--hw-ink); }
+.gs-steps li.done span { background: var(--c-ok); color: var(--hw-ink); }
+.gs-cables { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+.gs-cable { display: flex; flex-direction: column; gap: 3px; }
+.gs-cable b { font-size: 14px; }
+.gs-cable small { font-size: 12px; line-height: 1.4; color: var(--c-text-dim); }
+.gs-devices { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.gs-devices > .btn-secondary { align-self: flex-start; }
+.gs-dev-list { display: flex; flex-direction: column; gap: 6px; }
+.gs-dev { text-align: left; padding: 9px 12px; border-radius: var(--radius-sm); background: var(--c-bg); border: 1px solid var(--c-line); color: var(--c-text); cursor: pointer; font-size: 14px; }
+.gs-dev[aria-checked="true"] { border-color: var(--c-accent); background: var(--c-panel-2); }
+.gs-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+.gs-actions [hidden] { display: none; }
+.gs-note { margin: 12px 0 0; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; background: color-mix(in srgb, var(--c-warn) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c-warn) 40%, transparent); }
+.gs-meter { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; }
+.gs-meter .meter { flex: 1; height: 16px; }
+.gs-meter output { min-width: 7ch; text-align: right; }
+.gs-big { font-size: 16px; margin: 10px 0 14px; }
+.tuner { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px; margin: 10px 0; border-radius: var(--radius-lg); background: var(--c-bg); border: 1px solid var(--c-line); }
+.tuner-note { font: 900 72px/1 var(--font-display, var(--font-ui)); color: var(--c-text); transition: color 0.2s, text-shadow 0.2s; }
+.tuner-note.in-tune { color: var(--c-ok); text-shadow: 0 0 24px color-mix(in srgb, var(--c-ok) 60%, transparent); }
+.tuner-scale { position: relative; width: 100%; height: 26px; border-radius: 13px; background: linear-gradient(90deg, var(--c-err), var(--c-warn) 35%, var(--c-ok) 47% 53%, var(--c-warn) 65%, var(--c-err)); opacity: 0.85; }
+.tuner-needle { position: absolute; top: -6px; left: 50%; width: 4px; height: 38px; margin-left: -2px; border-radius: 2px; background: var(--c-text); box-shadow: 0 0 8px rgba(0, 0, 0, 0.8); transition: left 0.08s linear; }
+.tuner-read { font-size: 13px; color: var(--c-text-dim); text-align: center; }
+
+@media (max-width: 1180px) { .pads { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .gs-cables { grid-template-columns: 1fr; } .pads { grid-template-columns: repeat(4, minmax(0, 1fr)); } .gs-steps li { font-size: 0; gap: 0; justify-content: center; } }
+:root[data-theme="workshop"] .seg button { font-size: 13px; letter-spacing: 0.02em; }
+:root[data-theme="tube"] .seg button { font-size: 12px; letter-spacing: 0.03em; }
+:root[data-theme="arcade"] .seg button { font-size: 11px; }
+.deck-tempo > span { gap: 6px; }
+
+/* ---- live guitar cleanup (Input panel, Guitar tab) and the noise check report ---- */
+.cleanup { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: var(--radius-md); background: var(--c-bg); border: 1px solid var(--c-line); }
+.cleanup-head { display: flex; align-items: center; justify-content: space-between; }
+.cleanup-head .check { color: var(--c-text); }
+.cleanup.off .field, .cleanup.off #cleanup-summary { opacity: 0.45; }
+.cleanup-actions { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.gate-led { width: 10px; height: 10px; border-radius: 50%; background: var(--c-panel-3); border: 1px solid var(--c-line); transition: background 0.08s, box-shadow 0.08s; }
+.gate-led.open { background: var(--c-ok); box-shadow: 0 0 8px var(--c-ok); }
+.gs-report { margin-top: 14px; }
+.gs-results { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0 0 10px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--c-bg); border: 1px solid var(--c-line); font-size: 14px; }
+.gs-results dt { color: var(--c-text-dim); }
+.gs-results dd { margin: 0; }
+.gs-grade { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.gs-grade.good { background: color-mix(in srgb, var(--c-ok) 22%, transparent); color: var(--c-ok); }
+.gs-grade.ok { background: color-mix(in srgb, var(--c-warn) 22%, transparent); color: var(--c-warn); }
+.gs-grade.warn { background: color-mix(in srgb, var(--c-err) 22%, transparent); color: var(--c-err); }
+
+/* ---- Record a riff (Guitar tab) ---- */
+.riff { display: flex; flex-direction: column; gap: 6px; }
+.riff-rec { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c-err); }
+.riff-rec[aria-pressed="true"] { border-color: var(--c-err); color: var(--c-err); }
+.riff-rec[aria-pressed="true"] .rec-dot { animation: rec-blink 1s steps(2, start) infinite; }
+@keyframes rec-blink { to { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .riff-rec[aria-pressed="true"] .rec-dot { animation: none; } }

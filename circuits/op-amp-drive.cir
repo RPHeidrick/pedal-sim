@@ -1,0 +1,37 @@
+* Op amp overdrive (generic soft clipping circuit with diodes in the feedback loop)
+*@pedal name="Op Amp Drive"
+*@pot XDRIVE label="Drive"
+*@pot XTONE label="Tone"
+*@pot XLEVEL label="Level"
+V1 vcc 0 9
+Vin in 0 0
+* 4.5 V reference
+R1 vcc vref 10k
+R2 vref 0 10k
+C1 vref 0 47u
+* input buffer (emitter follower)
+R3 in n1 1k
+C2 n1 b1 20n
+R4 b1 vref 510k
+Q1 vcc b1 e1 2SC1815
+R5 e1 0 10k
+* clipping amp: non-inverting gain stage, 720 Hz high-pass leg, diodes in feedback
+C3 e1 p1 1u
+R6 p1 vref 10k
+XU1A p1 m1 vcc 0 o1 JRC4558
+R7 m1 m2 4.7k
+C4 m2 vref 47n
+R8 m1 fb 51k
+XDRIVE fb o1 o1 pot R=500k taper=log rot=0.5
+C5 m1 o1 51p
+D1 m1 o1 1N914
+D2 o1 m1 1N914
+* tone: fixed 723 Hz low-pass blended against the unfiltered signal
+R9 o1 t1 1k
+C6 t1 0 220n
+XTONE t1 tw o1 pot R=20k taper=lin rot=0.5
+XU1B tw o2 vcc 0 o2 JRC4558
+* output
+C7 o2 ov 1u
+XLEVEL 0 out ov pot R=100k taper=log rot=0.6
+.end

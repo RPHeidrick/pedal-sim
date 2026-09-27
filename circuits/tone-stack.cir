@@ -1,0 +1,16 @@
+* Passive tone stack (generic amp style treble, bass and middle network)
+*@pedal name="Tone Stack"
+*@pot XTREBLE label="Treble"
+*@pot XBASS label="Bass"
+*@pot XMID label="Middle"
+Vin in 0 0
+R1 in a 56k
+C1 in tt 250p
+C2 a tb 20n
+C3 a mt 20n
+XTREBLE tb out tt pot R=250k taper=log rot=0.5
+XBASS tb mt mt pot R=1Meg taper=log rot=0.5
+XMID 0 mt mt pot R=25k taper=lin rot=0.5
+* amplifier input load
+RL out 0 1Meg
+.end

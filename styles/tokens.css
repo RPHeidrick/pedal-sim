@@ -1,0 +1,65 @@
+/*
+ * Design tokens. Every colour, size and font in the app comes from here so the
+ * whole look can be retuned in one place.
+ *
+ * Mirrored in Figma as variables (Pedal Sim file, "Tokens" collection); each
+ * Figma variable's code syntax is the var(--name) below. Change both together.
+ */
+:root {
+  /* surfaces */
+  --c-bg: #0f1113;
+  --c-panel: #171a1e;
+  --c-panel-2: #1d2126;
+  --c-panel-3: #252a30;
+  --c-line: #2b3037;
+  --c-line-strong: #3a4048;
+
+  /* text */
+  --c-text: #e7e4dd;
+  --c-text-dim: #8e949c;
+  --c-text-faint: #5f656d;
+
+  /* signal colours (plots, meters) */
+  --c-accent: #f0a64a;     /* output / primary */
+  --c-accent-2: #6fa8dc;   /* input / secondary */
+  --c-accent-3: #a98fd8;   /* third series */
+  --c-grid: #252a30;
+  --c-axis: #3a4048;
+
+  /* hardware: pedal enclosures, knobs, LEDs (Figma: hardware/*) */
+  --hw-knob: #f1ebdf;       /* cream knob cap, selected Si/Ge option */
+  --hw-ink: #16120e;        /* screen print on enclosures */
+  --hw-led-on: #ff4d3a;     /* lit LED */
+  --hw-led-off: #4a1a14;    /* unlit LED */
+  --hw-cable: #0b0c0e;      /* patch cable */
+  --hw-chrome-hi: #f4f6f8;  /* footswitch highlight */
+  --hw-chrome-mid: #a9afb6; /* footswitch body */
+  --hw-chrome-lo: #6c7279;  /* footswitch shadow */
+
+  /* status */
+  --c-ok: #6cc28a;
+  --c-warn: #e5c15a;
+  --c-err: #e0645c;
+  --c-info: #6f8fb0;
+
+  /* type */
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 13px;
+  --fs-lg: 15px;
+  --fs-xl: 18px;
+
+  /* spacing & shape */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+}

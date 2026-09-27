@@ -1,0 +1,17 @@
+Copyright (c) 2026 Richard Heidrick. All rights reserved.
+
+This repository (code, circuit files, schematics, design notes and recordings) is
+shared publicly so it can be viewed and tried. No permission is granted to copy,
+modify or redistribute it outside of GitHub's own features without written
+permission from the author.
+
+Exceptions: the files in samples/ that are marked CC0 (FreePats recordings, see
+samples/README.md) are public domain and remain so.
+
+THE SOFTWARE AND ALL CONTENT ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR ITS CONTENT OR THE USE OR OTHER DEALINGS IN THEM.
+Building a real pedal from the build sheets is at your own risk.

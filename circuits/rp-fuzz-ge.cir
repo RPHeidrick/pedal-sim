@@ -1,0 +1,32 @@
+* Reverse Parallel Fuzz, PNP germanium side. Richard Heidrick's own design.
+* Three 2N1309 stages in the classic 1960s three transistor fuzz layout, with his own values.
+* Converted from his LTspice schematic (library/ltspice/rp-fuzz-ge.asc); pot values from his KiCad design
+* (Mod 5k, Gain 1k, Volume 100k). 2N1309 model: see parsers/library-models.js.
+* Omitted vs. the LTspice sim: supply bulk cap and reverse polarity diode.
+* Design notes: designs/reverse-parallel-fuzz.md
+*@pedal name="Reverse Parallel Fuzz (Ge)"
+*@pot XGAIN label="Gain"
+*@pot XMOD label="Mod"
+*@pot XVOL label="Volume"
+V1 vcc 0 9
+Vin in 0 0
+R1 in vcc 1Meg
+C1 in vcc 10n
+C5 b1 in 4.7u
+Q1 c1 b1 e1 2N1309
+R4 0 b1 470k
+R2 b1 vcc 100k
+R5 0 c1 10k
+XMOD e1 vcc vcc pot R=5k taper=lin rot=0.5
+C2 b2 c1 100n
+Q2 c2 b2 vcc 2N1309
+R7 0 c2 47k
+R11 e3 b2 100k
+Q3 c3 c2 e3 2N1309
+R8 tap c3 5.6k
+R9 tap 0 1k
+XGAIN vcc w e3 pot R=1k taper=lin rot=0.8
+C6 w vcc 4.7u
+C4 tap vo 1u
+XVOL 0 out vo pot R=100k taper=log rot=0.6
+.end

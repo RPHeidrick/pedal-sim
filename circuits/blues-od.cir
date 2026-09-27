@@ -1,0 +1,41 @@
+* Blues OD. Richard Heidrick's own design: two TL072 op amp stages into a 1N4148 diode clipper.
+* Converted automatically from his LTspice schematic (library/ltspice/blues-od.asc) by parsers/asc.js.
+* Design notes: designs/blues-od.md
+*@pedal name="Blues OD"
+*@pot XGain label="Gain"
+*@pot XTone label="Tone"
+.param gain=100k tone=100k
+V1 vcc 0 9
+V2 in 0 SINE(0 .2 440)
+D1 0 vcc 1N4007
+R1 vref vcc 47k
+R2 0 vref 47k
+XU1 n001 n002 vcc 0 n003 TL072
+XU2 vref n004 vcc 0 n005 TL072
+R3 in 0 1Meg
+C2 n001 in 10n
+R4 vref n001 1Meg
+C3 n003 n002 47p
+R5 n002 n006 4.7k
+R6 n002 n007 3.2k
+C4 n007 n006 10n
+C5 n006 0 10n
+C6 n008 n009 100n
+R9 n004 n008 10k
+R10 n005 n004 220k
+R11 n010 n004 6.9k
+D2 n010 n011 1N4148
+D3 n012 n010 1N4148
+D4 n011 n005 1N4148
+D5 n005 n012 1N4148
+R12 n013 n005 1k
+C7 n014 n013 1u
+C8 n015 n014 22n
+R13 n016 n014 10K
+R14 n015 0 22k
+C9 n016 0 2.2n
+C1 vcc 0 100u
+C10 vref 0 47u
+XGain n002 n003 n009 pot R=101k taper=lin rot=0.5
+XTone n015 out n016 pot R=101k taper=lin rot=0.5
+.end

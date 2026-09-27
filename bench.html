@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pedal Sim · Engine Bench</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/bench.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><a href="./" style="color:inherit;text-decoration:none">Pedal Sim</a> <span class="dim">/ engine bench</span> <a href="./" class="dim" style="font-size:var(--fs-sm);font-weight:400;margin-left:8px">← back to the pedalboard</a></div>
+    <div class="source">
+      <label class="field">
+        <span>Starter</span>
+        <select id="starter"></select>
+      </label>
+      <label class="btn">
+        Import netlist or LTspice .asc…
+        <input id="file" type="file" multiple accept=".asc,.cir,.net,.sp,.spi,.lib,.sub,.mod,.inc,.txt" hidden>
+      </label>
+      <span id="status" class="status">idle</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="col col-left">
+      <div class="panel">
+        <div class="panel-head">
+          <h2 id="pedal-name">Netlist</h2>
+          <button id="rebuild" class="btn small" title="Re-parse the edited text (Ctrl+Enter)">Rebuild</button>
+        </div>
+        <textarea id="netlist" spellcheck="false"></textarea>
+        <div id="companions" class="companions"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Controls</h2><span id="counts" class="dim mono"></span></div>
+        <div id="controls" class="controls"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Diagnostics</h2><span id="diag-count" class="dim mono"></span></div>
+        <ul id="diagnostics" class="diagnostics"></ul>
+      </div>
+
+      <details class="panel help">
+        <summary>Netlist conventions</summary>
+        <ul>
+          <li>Input node <code>in</code>, output node <code>out</code>, supply node <code>vcc</code>, ground <code>0</code> (or <code>gnd</code>).</li>
+          <li>A V source on <code>in</code> is replaced by the audio input; one is added if missing. A 9 V supply is added if <code>vcc</code> has no source.</li>
+          <li>Pots: <code>XVOL lug1 wiper lug3 pot R=500k taper=log rot=0.5</code> (taper <code>lin</code> | <code>log</code> | <code>rlog</code>; also <code>pot_log</code> etc.), or resistor pairs <code>RVOL_A lug1 w</code> + <code>RVOL_B w lug3</code>. Clockwise moves the wiper toward lug 3.</li>
+          <li>Switches: <code>XS1 c a b spdt state=0</code>, <code>dpdt</code> (c1 a1 b1 c2 a2 b2), <code>spst</code> (a b). State 0 connects c–a.</li>
+          <li>Op amps: <code>XU1 in+ in- v+ v- out TL072</code> (or JRC4558, NE5532, LM358, opamp …) uses the built-in macromodel unless a working <code>.subckt</code> is supplied.</li>
+          <li>Annotations in comments: <code>*@pot XVOL taper=log label="Volume"</code>, <code>*@switch XS1 label="Mode"</code>, <code>*@pedal name="My Fuzz"</code>.</li>
+          <li>Upload <code>.include</code>/<code>.lib</code> files together with the netlist (multi-select).</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="col col-right">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>DC operating point</h2>
+          <span id="op-meta" class="dim mono"></span>
+        </div>
+        <div class="op-grid">
+          <table id="op-nodes" class="table"></table>
+          <table id="op-devices" class="table"></table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Transfer curve</h2>
+          <label class="field inline"><span>±Vin</span>
+            <input id="sweep" type="number" min="0.01" max="5" step="0.05" value="1"></label>
+        </div>
+        <div class="plots two">
+          <figure><canvas id="plot-dc"></canvas><figcaption>DC sweep, capacitors open (V(out) − V(out)@0)</figcaption></figure>
+          <figure><canvas id="plot-dyn"></canvas><figcaption>Large signal: 200 Hz sine, last period, DC removed</figcaption></figure>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Transient</h2>
+          <div class="row">
+            <label class="field inline"><span>Signal</span>
+              <select id="sig-kind"><option value="sine">sine</option><option value="pluck">pluck</option><option value="chord">chord</option></select></label>
+            <label class="field inline"><span>Hz</span><input id="sig-freq" type="number" value="220" min="20" max="10000" step="1"></label>
+            <label class="field inline"><span>Amp V</span><input id="sig-amp" type="number" value="0.1" min="0.001" max="5" step="0.01"></label>
+            <label class="field inline"><span>Sec</span><input id="sig-dur" type="number" value="1" min="0.05" max="5" step="0.05"></label>
+            <label class="field inline"><span>OS</span>
+              <select id="os"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+          </div>
+        </div>
+        <div class="plots">
+          <figure><canvas id="plot-tran" class="wide"></canvas><figcaption id="tran-caption">Input and output (DC removed)</figcaption></figure>
+        </div>
+        <div class="tran-foot">
+          <div id="tran-stats" class="stats mono"></div>
+          <div class="row">
+            <button id="play-out" class="btn">▶ Output</button>
+            <button id="play-in" class="btn">▶ Dry input</button>
+            <button id="stop" class="btn">■ Stop</button>
+            <label class="field inline"><span>Level</span><input id="gain" type="range" min="0" max="1" step="0.01" value="0.5"></label>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="site/bench/bench.js"></script>
+</body>
+</html>

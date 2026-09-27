@@ -1,0 +1,31 @@
+* Reverse Parallel Fuzz, NPN silicon side. Richard Heidrick's own design.
+* Three 2N3904 stages in the classic 1960s three transistor fuzz layout, with his own values.
+* Converted from his LTspice schematic (library/ltspice/rp-fuzz-si.asc); pot values from his KiCad design
+* (Mod 5k, Gain 1k, Volume 100k). Omitted vs. the LTspice sim: supply bulk cap and reverse polarity diode.
+* Design notes: designs/reverse-parallel-fuzz.md
+*@pedal name="Reverse Parallel Fuzz (Si)"
+*@pot XGAIN label="Gain"
+*@pot XMOD label="Mod"
+*@pot XVOL label="Volume"
+V1 vcc 0 9
+Vin in 0 0
+R1 in 0 1Meg
+C1 in 0 10n
+C5 b1 in 4.7u
+Q1 c1 b1 e1 2N3904
+R4 vcc b1 470k
+R2 b1 0 100k
+R5 vcc c1 10k
+XMOD e1 0 0 pot R=5k taper=lin rot=0.5
+C2 b2 c1 100n
+Q2 c2 b2 0 2N3904
+R7 vcc c2 47k
+R11 e3 b2 100k
+Q3 c3 c2 e3 2N3904
+R8 tap c3 5.6k
+R9 tap vcc 1k
+XGAIN 0 w e3 pot R=1k taper=lin rot=0.8
+C6 w 0 4.7u
+C4 tap vo 100n
+XVOL 0 out vo pot R=100k taper=log rot=0.6
+.end

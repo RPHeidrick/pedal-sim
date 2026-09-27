@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pedal Sim · Real pedal circuits, live in your browser</title>
+  <meta name="description" content="Play through real guitar pedal circuits, simulated component by component in your browser. Designed and built by Richard Heidrick.">
+  <meta name="theme-color" content="#0f1113">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='3' width='22' height='26' rx='4' fill='%23f0a64a'/%3E%3Ccircle cx='11' cy='10' r='3' fill='%230f1113'/%3E%3Ccircle cx='21' cy='10' r='3' fill='%230f1113'/%3E%3Ccircle cx='16' cy='22' r='4' fill='%230f1113'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Big+Shoulders+Display:wght@800;900&family=Oswald:wght@500;600&family=Yellowtail&family=Audiowide&family=Press+Start+2P&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>/* apply the saved look before the page paints (no flash) */try{var l=(JSON.parse(localStorage.getItem('pedal-sim.prefs')||'{}')||{}).look;document.documentElement.dataset.theme=(['classic','workshop','tube','arcade'].indexOf(l)>=0)?l:'arcade';}catch(e){document.documentElement.dataset.theme='arcade';}</script>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/app.css">
+  <link rel="stylesheet" href="styles/themes.css">
+  <link rel="stylesheet" href="styles/fx.css">
+  <link rel="stylesheet" href="styles/play.css">
+  <link rel="stylesheet" href="styles/workshop.css">
+  <link rel="stylesheet" href="styles/build.css">
+  <!-- Every script the page imports, listed so the browser downloads them all at once instead of
+       discovering them one import at a time. tests/content.test.js checks this list is complete. -->
+  <link rel="modulepreload" href="samples/mine/recordings.js">
+  <link rel="modulepreload" href="site/inputs/samples.js">
+  <link rel="modulepreload" href="site/audio/audio.js">
+  <link rel="modulepreload" href="site/core.js">
+  <link rel="modulepreload" href="site/layout.js">
+  <link rel="modulepreload" href="circuits/index.js">
+  <link rel="modulepreload" href="engine/parsers/netlist.js">
+  <link rel="modulepreload" href="engine/parsers/values.js">
+  <link rel="modulepreload" href="engine/parsers/library-models.js">
+  <link rel="modulepreload" href="engine/parsers/elaborate.js">
+  <link rel="modulepreload" href="site/workshop/templates.js">
+  <link rel="modulepreload" href="site/workshop/store.js">
+  <link rel="modulepreload" href="site/board/library.js">
+  <link rel="modulepreload" href="site/board/info-card.js">
+  <link rel="modulepreload" href="site/board/zoom.js">
+  <link rel="modulepreload" href="site/audio/output-profiles.js">
+  <link rel="modulepreload" href="site/inputs/notes.js">
+  <link rel="modulepreload" href="site/inputs/digital.js">
+  <link rel="modulepreload" href="site/inputs/digital-ui.js">
+  <link rel="modulepreload" href="site/inputs/tuner.js">
+  <link rel="modulepreload" href="site/audio/input-cleanup.js">
+  <link rel="modulepreload" href="site/inputs/input-check.js">
+  <link rel="modulepreload" href="site/inputs/wav-file.js">
+  <link rel="modulepreload" href="site/inputs/guitar-setup.js">
+  <link rel="modulepreload" href="site/help/tips.js">
+  <link rel="modulepreload" href="site/inputs/input-rack.js">
+  <link rel="modulepreload" href="site/audio/output-rack.js">
+  <link rel="modulepreload" href="site/looks/knob.js">
+  <link rel="modulepreload" href="site/looks/theme.js">
+  <link rel="modulepreload" href="site/looks/fx.js">
+  <link rel="modulepreload" href="site/looks/paint.js">
+  <link rel="modulepreload" href="site/board/chain.js">
+  <link rel="modulepreload" href="site/board/library-ui.js">
+  <link rel="modulepreload" href="site/board/presets.js">
+  <link rel="modulepreload" href="site/board/share.js">
+  <link rel="modulepreload" href="site/board/starter-boards.js">
+  <link rel="modulepreload" href="site/help/tour.js">
+  <link rel="modulepreload" href="site/help/guide.js">
+  <link rel="modulepreload" href="site/workshop/describe.js">
+  <link rel="modulepreload" href="site/workshop/ui.js">
+  <link rel="modulepreload" href="site/build/parts.js">
+  <link rel="modulepreload" href="site/build/schematic.js">
+  <link rel="modulepreload" href="site/build/drill.js">
+  <link rel="modulepreload" href="site/build/ui.js">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><rect x="5" y="3" width="22" height="26" rx="4" fill="var(--c-accent)"/><circle cx="11" cy="10" r="3" fill="var(--c-bg)"/><circle cx="21" cy="10" r="3" fill="var(--c-bg)"/><circle cx="16" cy="22" r="4" fill="var(--c-bg)"/></svg>
+      Pedal Sim
+    </a>
+    <nav class="site-nav">
+      <a href="#board" aria-current="page">Pedalboard</a>
+      <a href="#workshop">Workshop</a>
+      <a href="#library">Library</a>
+      <a href="#how">How it works</a>
+      <a href="bench.html">Engine bench</a>
+      <a href="https://github.com/rpheidrick/pedal-sim" target="_blank" rel="noopener">GitHub</a>
+      <button id="look" class="look-btn" title="Change the look of the site. Every earlier look is kept.">Look</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="tubes" aria-hidden="true"><i class="tube"></i><i class="tube"></i><i class="tube"></i></div>
+      <div class="hero-text">
+        <p class="eyebrow">Circuit level guitar effects</p>
+        <h1>Real pedal circuits, <em>played live</em> in your browser.</h1>
+        <p class="lede">Every sound here is solved from the actual schematic, transistor by transistor, up to 192,000 times a second. Hear what guitar effects do with real guitar recordings, build a chain, and turn the knobs. No guitar needed.</p>
+        <div class="hero-actions">
+          <button id="tour-start" class="btn-primary">New to effects? Start the guide</button>
+          <a href="#presets" class="btn-link">or jump to the starter boards</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="board" class="rig" aria-label="Pedalboard">
+      <!-- INPUT -->
+      <div class="rack rack-in" id="rack-in">
+        <div class="rack-head">
+          <h2>Input</h2>
+          <button class="rack-toggle" data-rack="in" aria-expanded="true" aria-controls="rack-in" title="Fold the input panel to give the chain more room">‹</button>
+        </div>
+        <div class="rack-mini" aria-hidden="true"><div class="meter vert"><div class="meter-fill" id="in-meter-mini"></div></div></div>
+        <div class="seg" role="tablist" aria-label="Input source">
+          <button role="tab" data-src="sample" aria-selected="true">Samples</button>
+          <button role="tab" data-src="live" aria-selected="false">Guitar</button>
+          <button role="tab" data-src="digital" aria-selected="false" title="Play real recorded guitar notes with chord pads and a fretboard">Digital</button>
+          <button role="tab" data-src="file" aria-selected="false">File</button>
+        </div>
+        <div class="src-extra" data-for="sample">
+          <div class="sample-list" id="sample-list" role="radiogroup" aria-label="Sample sound"></div>
+        </div>
+        <div class="src-extra" data-for="live" hidden>
+          <button class="btn-primary gs-open" id="gs-open">Plug in your guitar</button>
+          <p class="hint">Four quick steps: pick your cable or interface (USB guitar cables work), measure the noise and set the level, tune up, play.</p>
+          <label class="field"><span>Interface / input</span><select id="device"><option value="">Default input</option></select></label>
+          <div class="riff">
+            <button class="btn-secondary riff-rec" id="riff-rec" aria-pressed="false"><span class="rec-dot" aria-hidden="true"></span><span class="riff-label">Record a riff</span></button>
+            <p class="hint" id="riff-hint">Up to 60 seconds of your guitar, cleaned up, saved as a WAV file in your Downloads folder.</p>
+          </div>
+          <div class="cleanup" id="cleanup">
+            <div class="cleanup-head">
+              <label class="check"><input type="checkbox" id="cleanup-on" checked> Clean up the signal</label>
+              <span class="gate-led" id="gate-led" title="Noise gate: lit while it hears you playing"></span>
+            </div>
+            <p class="hint" id="cleanup-summary">Removes rumble and hiss. Run the noise check to remove hum too.</p>
+            <label class="field"><span>Noise gate</span><select id="cleanup-gate">
+              <option value="off">Off</option><option value="light">Light (−12 dB)</option><option value="medium">Medium (−24 dB)</option><option value="strong">Strong (−48 dB)</option>
+            </select></label>
+            <div class="cleanup-actions">
+              <button class="text-btn" id="cleanup-check" title="Measure the noise, hum and level again">Check noise and level</button>
+              <button class="text-btn" id="cleanup-clip" title="Record 10 seconds of the raw guitar signal as a WAV file, to look at the noise in detail">Save a test clip</button>
+            </div>
+          </div>
+          <p class="hint">Use headphones to avoid feedback.</p>
+        </div>
+        <div class="src-extra" data-for="digital" hidden>
+          <p class="hint">No guitar? Play one here. Chord pads, Auto strum and a fretboard sit just under the pedalboard.</p>
+          <a class="btn-link" href="#digital-deck">Go to the digital guitar ↓</a>
+        </div>
+        <div class="src-extra" data-for="file" hidden>
+          <label class="file-btn">Choose a DI recording…<input id="file" type="file" accept="audio/*" hidden></label>
+          <p class="hint" id="file-name">A dry, unprocessed guitar track works best (WAV, MP3, FLAC).</p>
+        </div>
+        <div class="input-group" id="input-group">
+          <label class="field">
+            <span>Input level <output id="in-gain-val" class="mono">0 dB</output></span>
+            <input id="in-gain" type="range" min="-18" max="40" step="0.5" value="0" aria-describedby="in-hint">
+          </label>
+          <div class="meter" aria-hidden="true"><div class="meter-fill" id="in-meter"></div></div>
+          <p class="readout mono stat-line" title="The peak voltage the guitar sends into the first pedal. A passive guitar pickup gives roughly 100 to 500 mV."><span>Into first pedal</span><output id="in-volts">— mV</output></p>
+          <p class="hint" id="in-hint">How hard the guitar hits the pedals. 0 dB is a typical guitar.</p>
+        </div>
+      </div>
+
+      <!-- CHAIN -->
+      <div class="chain-wrap">
+        <div class="chain-head">
+          <button id="power" class="power" aria-pressed="false" title="Start or stop the sound. It fades in quietly.">
+            <span class="power-led" aria-hidden="true"></span>
+            <span class="power-label">Power on</span>
+          </button>
+          <div class="chain-title">
+            <h2>Signal chain</h2>
+            <span class="dim" id="chain-hint" title="Turn a knob or drag its slider (double-click resets). Click a footswitch to switch a pedal off and on.">Guitar → pedals → amp</span>
+          </div>
+          <div class="chain-tools">
+          <span class="tilt" title="Lights up while the safety limiter is turning the sound down">TILT</span>
+          <button id="board-save" class="tool board-btn" title="Save this board under a name (it appears with the starter boards)" aria-label="Save this board" aria-haspopup="dialog"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 1h9l3 3v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zm2 1v4h7V2zm4 7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg></button>
+          <button id="board-share" class="tool board-btn" title="Share this board: get a link anyone can open" aria-label="Share this board" aria-haspopup="dialog"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M12 1a3 3 0 1 1-2.8 4.1L6.9 6.3a3 3 0 0 1 0 3.4l2.3 1.2A3 3 0 1 1 8.6 12L6.3 10.8a3 3 0 1 1 0-5.6L8.6 4A3 3 0 0 1 12 1z"/></svg></button>
+          <button id="compare" class="toggle compare" aria-pressed="false" title="Switch every pedal off at once to hear the plain guitar, then back on to compare">Hear without pedals</button>
+          <div class="zoom" role="group" aria-label="Zoom the signal chain">
+            <button data-zoom="out" title="Zoom out (Ctrl + scroll)" aria-label="Zoom out">−</button>
+            <button data-zoom="reset" class="zoom-level mono" title="Back to 100%" aria-label="Reset zoom to 100%" id="zoom-level">100%</button>
+            <button data-zoom="in" title="Zoom in (Ctrl + scroll)" aria-label="Zoom in">+</button>
+            <button data-zoom="fit" title="Fit the whole chain in view">Fit</button>
+          </div>
+          </div>
+        </div>
+        <div class="chain" id="chain"><div class="chain-inner" id="chain-inner" aria-live="polite"></div></div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="rack rack-out" id="rack-out">
+        <div class="rack-head">
+          <h2>Output</h2>
+          <button class="rack-toggle" data-rack="out" aria-expanded="true" aria-controls="rack-out" title="Fold the output panel to give the chain more room">›</button>
+        </div>
+        <div class="rack-mini" aria-hidden="true"><div class="meter vert"><div class="meter-fill" id="out-meter-mini"></div></div></div>
+        <div class="listen-group">
+          <label class="field inline"><span>Listening on</span>
+            <select id="listen" aria-describedby="listen-tip"></select>
+          </label>
+          <p class="hint listen-tip" id="listen-tip"></p>
+          <label class="field">
+            <span>Volume <output id="out-gain-val" class="mono">-24 dB</output></span>
+            <input id="out-gain" type="range" min="-48" max="0" step="0.5" value="-24" aria-describedby="volume-hint">
+          </label>
+          <p class="hint" id="volume-hint">Starts quiet on purpose. Raise it slowly.</p>
+        </div>
+        <div class="meter" aria-hidden="true"><div class="meter-fill" id="out-meter"></div></div>
+        <div class="row">
+          <label class="check" title="Keeps every sound below -12 dB, so a sudden loud pedal cannot hurt your ears. Recommended for headphones."><input type="checkbox" id="safety"> Safety cap</label>
+          <p class="readout mono" id="limit">Peak limiter idle</p>
+        </div>
+        <button id="sound-check-open" class="text-btn">Sound check and listening tips</button>
+        <details class="more" id="more-out">
+          <summary>More sound settings</summary>
+          <div class="more-body">
+            <label class="field inline"><span>Speaker</span>
+              <select id="cab">
+                <option value="1x12" selected>1×12 open back</option>
+                <option value="4x12">4×12 closed back</option>
+                <option value="off">Off (direct, flat)</option>
+              </select>
+            </label>
+            <div class="row">
+              <p class="readout mono" id="level-match" title="Evens out loudness between pedals and boards, separate from your Volume">Level match +0 dB</p>
+              <button id="auto-level" class="toggle small" title="Even out the loudness of what is playing now, so switching boards does not jump in volume">Match level</button>
+            </div>
+            <canvas id="scope" width="560" height="160" aria-label="Output waveform"></canvas>
+            <div class="stats">
+              <label class="field inline"><span>Quality</span>
+                <select id="oversample">
+                  <option value="auto" selected>Auto</option>
+                  <option value="1">1× (lightest)</option>
+                  <option value="2">2× oversampled</option>
+                  <option value="4">4× (clean fuzz)</option>
+                  <option value="8">8× (studio, heavy)</option>
+                </select>
+              </label>
+              <label class="field inline"><span>Engine</span>
+                <select id="engine">
+                  <option value="wasm" selected>C++ (WebAssembly)</option>
+                  <option value="js">JavaScript</option>
+                </select>
+              </label>
+              <div class="cpu"><span>Engine load</span><div class="meter small"><div class="meter-fill" id="cpu-meter"></div></div><output id="cpu-val" class="mono">—</output></div>
+              <p class="readout mono stat-lines" id="latency"><span id="audio-format">Audio format appears after power on</span><span id="audio-quality">&nbsp;</span></p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="digital-deck" class="deck" aria-label="Digital guitar" hidden></section>
+
+    <section id="presets" class="presets" aria-labelledby="presets-title">
+      <div class="presets-head">
+        <h2 id="presets-title">Starter boards</h2>
+        <span class="dim"><span id="presets-for">Boards for electric guitar.</span> One click loads a finished sound. Then change anything.</span>
+        <button class="text-btn presets-all" id="presets-all" hidden>Show all boards</button>
+      </div>
+      <div class="preset-row" id="preset-row"></div>
+    </section>
+
+    <section id="workshop" class="workshop" aria-label="Pedal Workshop"></section>
+
+    <section id="library" class="library" aria-label="Pedal library">
+      <div class="section-head">
+        <h2 class="section-title">Pedal library</h2>
+        <p class="dim">My own pedal designs and classic reference circuits, simulated component by component. Add as many as your computer can run. Want to try your own? Load an LTspice schematic on the <a href="bench.html">engine bench</a>.</p>
+      </div>
+      <div class="fx-types" id="fx-types" aria-label="Kinds of effect"></div>
+      <div class="lib-cols" id="lib-cols"></div>
+    </section>
+
+    <section id="how" class="how">
+      <h2 class="section-title">How it works</h2>
+      <ol class="steps">
+        <li><strong>Schematic in.</strong> Each pedal starts as an LTspice schematic. The importer reads the <code>.asc</code> file, traces the wires into a netlist, and turns swept resistors into knobs.</li>
+        <li><strong>Circuit solved.</strong> A modified nodal analysis engine models every resistor, capacitor, diode, transistor and op amp, and solves the nonlinear circuit with Newton iteration at up to eight times the audio rate, so distortion stays free of digital aliasing.</li>
+        <li><strong>Sound out.</strong> The solver runs on the browser's real-time audio thread, so your guitar goes through the circuit as you play. Knobs change the actual pot resistances, and a speaker cabinet model stands in for the amp.</li>
+      </ol>
+      <p class="dim">Want the numbers? The <a href="bench.html">engine bench</a> shows operating points, transfer curves and harmonic distortion for any circuit, including your own LTspice files.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Designed and built by Richard Heidrick</span>
+    <a href="https://github.com/rpheidrick/pedal-sim" target="_blank" rel="noopener">Source on GitHub</a>
+  </footer>
+
+  <dialog id="build-sheet" class="sound-check build-sheet" aria-label="Build it yourself"></dialog>
+  <dialog id="guitar-setup" class="sound-check guitar-setup" aria-label="Plug in your guitar"></dialog>
+
+  <div id="toast" class="toast" role="status" hidden><span id="toast-text"></span><button id="toast-action" class="toast-action" hidden></button></div>
+  <div id="tip" class="tip" role="tooltip" hidden></div>
+
+  <dialog id="sound-check" class="sound-check" aria-labelledby="sc-title">
+    <form method="dialog">
+      <h3 id="sc-title">Sound check</h3>
+      <p class="sc-lede">Pedal Sim starts quietly on purpose. Turn it up a little at a time until the guitar sounds comfortable, never loud. Guitar effects can jump in volume, and headphones put that right in your ears.</p>
+      <h4>What are you listening on?</h4>
+      <div class="sc-profiles" id="sc-profiles" role="radiogroup" aria-label="Listening on"></div>
+      <ul class="sc-tips" id="sc-tips"></ul>
+      <h4>Where to turn it up, in this order</h4>
+      <ol class="sc-steps">
+        <li><strong>Your computer or phone volume.</strong> The speaker icon in the taskbar or menu bar, or the volume keys. Start around a quarter.</li>
+        <li><strong>The Volume slider here</strong> (it is also in the Output panel):
+          <label class="sc-volume"><input id="sc-volume" type="range" min="-48" max="0" step="0.5" aria-label="Volume"><output id="sc-volume-val" class="mono"></output></label>
+        </li>
+        <li><strong>The knob on your speakers, headphone amp or audio interface,</strong> if you have one. Keep it low until the sound is playing.</li>
+      </ol>
+      <label class="check"><input type="checkbox" id="sc-safety"> Safety cap: never louder than -12 dB (recommended for headphones)</label>
+      <div class="sc-actions"><button class="btn-primary" value="done">Sounds good</button></div>
+    </form>
+  </dialog>
+  <script type="module" src="site/main.js"></script>
+</body>
+</html>

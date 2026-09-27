@@ -1,0 +1,23 @@
+{
+  "name": "pedal-sim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Guitar pedal circuit simulator in the browser: SPICE netlist -> real-time MNA engine -> virtual pedalboard.",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.js",
+    "serve": "node tools/serve.js",
+    "test": "node --test",
+    "test:browser": "node tests/browser/run.mjs",
+    "bench": "node tools/bench.js",
+    "soak": "node tools/soak.js",
+    "render": "node tools/render.js",
+    "levels": "node tools/preset-levels.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}

@@ -1,0 +1,43 @@
+/*
+ * Build it yourself sheet. Figma: "Phase 12 · Build it" page.
+ */
+.build-sheet { width: min(1100px, calc(100vw - 24px)); }
+.bs-head { display: grid; grid-template-columns: 16px 1fr auto; gap: 14px; align-items: start; }
+.bs-head .eyebrow { margin: 0 0 2px; }
+.bs-head h3 { margin: 0; font-size: 26px; }
+.bs-head p.dim { margin: 4px 0 0; font-size: 13px; }
+.bs-swatch { width: 16px; height: 56px; border-radius: 4px; background: var(--pedal); }
+.bs-note { margin: 12px 0; font-size: 13px; color: var(--c-text-dim); }
+.bs-tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 10px 0 14px; }
+.bs-pane[hidden] { display: none; }
+.bs-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bs-table th { text-align: left; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-text-faint); padding: 6px 8px; border-bottom: 1px solid var(--c-line-strong); }
+.bs-table td { padding: 6px 8px; border-bottom: 1px solid var(--c-line); vertical-align: top; color: var(--c-text-dim); }
+.bs-table td b { color: var(--c-text); }
+.bs-table td.mono { font-size: 11px; }
+.bs-group td { padding-top: 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-accent); border-bottom-color: var(--c-line-strong); }
+.bs-art { background: #fff; border-radius: var(--radius-md); padding: 8px; overflow: auto; max-height: 62vh; }
+.bs-art svg { display: block; max-width: 100%; height: auto; }
+.bs-art svg[width$="mm"] { width: 100%; }
+.bs-wiring svg { max-width: 640px; }
+.bs-steps { margin: 12px 0 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.55; color: var(--c-text-dim); }
+.bs-downloads { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--c-line); }
+.bs-downloads .btn-primary { margin-left: auto; }
+.bs-safe { margin-top: 8px; }
+.pedal-build { margin-top: 12px; width: 100%; }
+.lib-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+
+/* print: only the build sheet, on white paper */
+@media print {
+  body.printing-sheet > *:not(.build-sheet) { display: none !important; }
+  body.printing-sheet { background: #fff !important; }
+  body.printing-sheet::after { display: none !important; }
+  body.printing-sheet .build-sheet { position: static; width: auto; max-height: none; overflow: visible; border: 0; box-shadow: none; background: #fff; color: #111; padding: 0; }
+  body.printing-sheet .build-sheet::backdrop { display: none; }
+  .build-sheet .bs-tabs, .build-sheet .bs-downloads, .build-sheet .bs-safe, .build-sheet .info-close { display: none !important; }
+  .build-sheet .bs-pane { display: block !important; break-inside: avoid-page; margin-bottom: 18px; }
+  .build-sheet .bs-pane + .bs-pane { break-before: page; }
+  .build-sheet * { color: #111 !important; }
+  .build-sheet .bs-art { max-height: none; overflow: visible; }
+  .build-sheet .bs-art svg[width$="mm"] { width: auto; }
+}

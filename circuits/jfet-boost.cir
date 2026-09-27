@@ -1,0 +1,17 @@
+* JFET booster (single J201 common-source gain stage)
+*@pedal name="JFET Boost"
+*@pot XGAIN label="Gain"
+*@pot XVOL label="Volume"
+V1 vcc 0 9
+Vin in 0 0
+C1 in g 100n
+R1 g 0 1Meg
+J1 d g s J201
+R2 vcc d 10k
+R3 s 0 1.5k
+* Gain: variable resistance in series with the source bypass cap
+XGAIN s s gb pot R=10k taper=lin rot=0.5
+C2 gb 0 22u
+C3 d vo 1u
+XVOL 0 out vo pot R=100k taper=log rot=0.6
+.end

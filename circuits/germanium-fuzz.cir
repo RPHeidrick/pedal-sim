@@ -1,0 +1,22 @@
+* Germanium fuzz (generic two transistor PNP circuit, positive-ground layout drawn with a negative supply)
+*@pedal name="Germanium Fuzz"
+*@pot XFUZZ label="Fuzz"
+*@pot XVOL label="Volume"
+V1 vcc 0 -9
+Vin in 0 0
+C1 in b1 2.2u
+Q1 c1 b1 0 AC128
+R1 c1 vcc 33k
+Q2 c2 c1 e2 AC128
+R2 e2 b1 100k
+R3 vcc n1 470
+R4 n1 c2 8.2k
+* Fuzz: 1k pot from Q2 emitter to ground, wiper bypassed by 20u
+XFUZZ 0 fz e2 pot R=1k taper=lin rot=1
+C2 fz 0 20u
+* Output
+C3 n1 vo 10n
+XVOL 0 out vo pot R=500k taper=log rot=0.7
+* Generic germanium PNP (hFE ~80, noticeable leakage)
+.model AC128 PNP(IS=3u BF=90 NF=1.15 VAF=30 IKF=0.3 ISE=100n NE=1.8 BR=5 NR=1.15 RB=80 RC=2 RE=0.5)
+.end

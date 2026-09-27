@@ -1,0 +1,229 @@
+/*
+ * Pedal finishes (Paint shop), motion (add, remove, move, stomp), glowing patch cables,
+ * and the small menus (Look, Paint shop). Works in every look.
+ * Figma: "Phase 9 · Workshop" page, components "Pedal / Workshop" (Finish = ...) and "Motion spec".
+ */
+
+/* ---------- enclosure finishes --------------------------------------------------- */
+.pedal {
+  --ink: var(--hw-ink);
+  --screws:
+    radial-gradient(circle at 15px 15px, #efe8df 0 2.5px, #5b544c 3.5px 5px, transparent 5.6px),
+    radial-gradient(circle at calc(100% - 15px) 15px, #efe8df 0 2.5px, #5b544c 3.5px 5px, transparent 5.6px),
+    radial-gradient(circle at 15px calc(100% - 15px), #efe8df 0 2.5px, #5b544c 3.5px 5px, transparent 5.6px),
+    radial-gradient(circle at calc(100% - 15px) calc(100% - 15px), #efe8df 0 2.5px, #5b544c 3.5px 5px, transparent 5.6px);
+  color: var(--ink);
+}
+.pedal, .pedal[data-finish="painted"] {
+  background:
+    var(--screws),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--pedal) 92%, white), color-mix(in srgb, var(--pedal) 76%, black));
+}
+.pedal[data-finish="brushed"] {
+  background:
+    var(--screws),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 1px, rgba(0, 0, 0, 0.04) 1px 3px),
+    linear-gradient(100deg, #d9d4cd, #a59e95 30%, #ebe6df 55%, #9a938a 80%, #c8c2ba);
+}
+.pedal[data-finish="candy"] {
+  background:
+    var(--screws),
+    radial-gradient(120% 60% at 30% 0%, rgba(255, 255, 255, 0.45), transparent 55%),
+    linear-gradient(180deg, #ffb067, #ff7a1a 45%, #c24e00);
+  --ink: #1a0b02;
+}
+.pedal[data-finish="hammertone"] {
+  background:
+    var(--screws),
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.14) 0 6%, transparent 7%),
+    radial-gradient(circle at 70% 20%, rgba(0, 0, 0, 0.12) 0 8%, transparent 9%),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.1) 0 7%, transparent 8%),
+    radial-gradient(circle at 80% 80%, rgba(0, 0, 0, 0.14) 0 6%, transparent 7%),
+    radial-gradient(circle at 10% 85%, rgba(255, 255, 255, 0.08) 0 9%, transparent 10%),
+    linear-gradient(180deg, #c98a52, #8f5a31 55%, #b77a45);
+  background-size: auto, auto, 60px 60px, 70px 70px, 50px 50px, 64px 64px, 80px 80px, auto;
+  --ink: #1a0f07;
+}
+.pedal[data-finish="matte"] {
+  background:
+    var(--screws),
+    linear-gradient(180deg, #2a2420, #141110);
+  --ink: #ff7a1a;
+}
+.pedal[data-finish="relic"] {
+  background:
+    var(--screws),
+    radial-gradient(140% 90% at 50% 45%, transparent 55%, rgba(60, 45, 30, 0.45)),
+    radial-gradient(circle at 78% 22%, rgba(90, 70, 50, 0.25) 0 4%, transparent 5%),
+    radial-gradient(circle at 18% 64%, rgba(90, 70, 50, 0.2) 0 3%, transparent 4%),
+    linear-gradient(180deg, #efe5d1, #cdbfa6);
+  --ink: #2a1d12;
+}
+.pedal[data-finish="matte"] .knob-arc { stroke: var(--ink); }
+.pedal[data-finish="matte"] .knob-slider::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--ink) var(--p), rgba(255, 255, 255, 0.12) var(--p)); }
+.pedal[data-finish="matte"] .knob-ring { fill: rgba(255, 255, 255, 0.06); }
+.pedal[data-finish="matte"] .pedal-info { border-color: rgba(255, 122, 26, 0.6); color: var(--ink); }
+.pedal .knob-pointer { stroke: var(--ink); }
+.pedal[data-finish="candy"] .knob-pointer, .pedal[data-finish="brushed"] .knob-pointer { stroke: #c24e00; }
+
+/* input and output jacks on the sides */
+.pedal::before, .pedal::after {
+  content: ""; position: absolute; top: 58px; width: 9px; height: 24px; border-radius: 3px;
+  background: linear-gradient(180deg, var(--hw-chrome-hi), var(--hw-chrome-mid) 50%, var(--hw-chrome-lo));
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+}
+.pedal::before { left: -7px; }
+.pedal::after { right: -7px; }
+.pedal-name { color: var(--ink); }
+.pedal .pedal-info { left: 30px; bottom: 10px; } /* clear of the corner screw */
+.pedal-name .custom { display: block; }
+
+/* LED: glows orange and flares on stomp */
+body.live .pedal:not(.off) .pedal-led { animation: led-breathe 3s ease-in-out infinite; }
+@keyframes led-breathe { 50% { filter: brightness(1.25); } }
+
+/* ---------- patch cables carry the signal ------------------------------------------ */
+.cable { position: relative; overflow: visible; }
+body.live .chain:not(.dry) .cable {
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0) 0 10px, rgba(255, 240, 220, calc(0.25 + var(--sig) * 0.6)) 10px 16px, rgba(255, 255, 255, 0) 16px 26px),
+    linear-gradient(90deg, color-mix(in srgb, var(--c-accent) 80%, black), var(--c-accent));
+  background-size: 26px 100%, 100% 100%;
+  box-shadow: 0 0 calc(4px + var(--sig) * 18px) color-mix(in srgb, var(--c-accent) calc(30% + var(--sig) * 60%), transparent);
+  animation: signal-flow 0.6s linear infinite;
+}
+@keyframes signal-flow { to { background-position: 26px 0, 0 0; } }
+.cable.plug-in { animation: plug-in 0.45s ease-out; transform-origin: left center; }
+@keyframes plug-in { from { transform: scaleX(0); } to { transform: none; } }
+
+/* ---------- add / remove / move / stomp ------------------------------------------ */
+.pedal.enter { animation: pedal-drop 0.52s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+@keyframes pedal-drop {
+  0% { transform: translateY(-90px) scale(0.92) rotate(-3deg); opacity: 0; }
+  55% { transform: translateY(6px) scale(1.03, 0.96); opacity: 1; }
+  75% { transform: translateY(-3px) scale(0.99, 1.01); }
+  100% { transform: none; }
+}
+.pedal.enter::marker { content: none; }
+.pedal.leaving { animation: pedal-leave 0.32s ease-in forwards; pointer-events: none; }
+@keyframes pedal-leave {
+  30% { transform: translateY(-22px) rotate(-5deg) scale(0.96); opacity: 1; }
+  100% { transform: translateY(-60px) rotate(-14deg) scale(0.45); opacity: 0; }
+}
+.pedal.stomp { animation: pedal-stomp 0.18s ease-out; }
+@keyframes pedal-stomp { 40% { transform: translateY(3px) scale(0.99); } }
+.pedal.stomp .pedal-led { animation: led-flare 0.4s ease-out; }
+@keyframes led-flare { 30% { transform: scale(1.8); filter: brightness(1.6); } }
+.pedal.grabbable { cursor: grab; }
+.pedal.dragging {
+  cursor: grabbing; z-index: 10; transition: none;
+  box-shadow: 0 34px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px var(--c-accent), 0 0 30px rgba(255, 122, 26, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.pedal.dragging .pedal-tools { opacity: 0; }
+.chain.drag-active .cable { opacity: 0.35; }
+.drop-home { transition: transform 0.22s cubic-bezier(0.2, 1.2, 0.4, 1); }
+.spark {
+  position: fixed; z-index: 60; width: 7px; height: 7px; border-radius: 50%; pointer-events: none;
+  background: #ffd29a; box-shadow: 0 0 10px 2px #ff7a1a;
+  animation: spark 0.62s cubic-bezier(0.1, 0.7, 0.3, 1) forwards;
+}
+@keyframes spark { to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; } }
+.puff {
+  position: fixed; z-index: 59; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 180, 110, 0.5), rgba(255, 122, 26, 0.12) 45%, transparent 70%);
+  animation: puff 0.5s ease-out forwards;
+}
+@keyframes puff { from { transform: scale(0.3); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+
+/* ---------- menus: Look picker and Paint shop ----------------------------------- */
+.look-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  background: var(--c-panel-2); border: 1px solid var(--c-line-strong); color: var(--c-accent-2);
+  font-family: var(--font-label, var(--font-ui)); font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+}
+.look-btn:hover { border-color: var(--c-accent); color: var(--c-accent); }
+.look-btn .dots { display: inline-flex; gap: 3px; }
+.look-btn .dots i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+.menu-pop {
+  position: fixed; z-index: 55; min-width: 260px; padding: 10px; border-radius: var(--radius-lg);
+  background: var(--c-panel-3); border: 1px solid var(--c-line-strong); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+  animation: menu-in 0.16s ease-out;
+}
+@keyframes menu-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+.menu-pop h4 { margin: 4px 6px 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-text-faint); }
+.look-opt {
+  display: grid; grid-template-columns: 54px 1fr; gap: 10px; align-items: center; width: 100%; text-align: left;
+  padding: 8px; border-radius: var(--radius-md); background: none; border: 1px solid transparent; cursor: pointer; color: var(--c-text);
+}
+.look-opt:hover { background: var(--c-panel-2); }
+.look-opt[aria-checked="true"] { border-color: var(--c-accent); background: var(--c-panel-2); }
+.look-opt b { display: block; font-size: 14px; }
+.look-opt small { display: block; font-size: 12px; color: var(--c-text-dim); line-height: 1.35; }
+.look-prev { width: 54px; height: 38px; border-radius: 8px; display: flex; align-items: flex-end; gap: 3px; padding: 5px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.look-prev i { flex: 1; border-radius: 3px; display: block; }
+
+.paint-pop { width: 300px; }
+.finish-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.finish-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 4px; border-radius: var(--radius-md);
+  background: none; border: 1px solid var(--c-line); cursor: pointer; color: var(--c-text); font-size: 12px; font-weight: 600;
+}
+.finish-opt:hover { border-color: var(--c-line-strong); transform: translateY(-1px); }
+.finish-opt[aria-checked="true"] { border-color: var(--c-accent); box-shadow: 0 0 0 1px var(--c-accent); }
+.finish-chip { width: 44px; height: 56px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+.paint-pop label { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; font-size: 12px; color: var(--c-text-dim); }
+.paint-pop input[type=text] {
+  font: inherit; font-size: 14px; color: var(--c-text); background: var(--c-bg); border: 1px solid var(--c-line-strong);
+  border-radius: var(--radius-sm); padding: 8px 10px;
+}
+.paint-pop input[type=text]:focus { outline: none; border-color: var(--c-accent); }
+.paint-actions { display: flex; justify-content: space-between; margin-top: 12px; }
+.tool svg { width: 15px; height: 15px; display: block; margin: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pedal.enter, .pedal.leaving, .pedal.stomp, .cable.plug-in, body.live .chain:not(.dry) .cable { animation: none !important; }
+  .spark, .puff { display: none; }
+}
+.pedal.grabbable { touch-action: pan-y; }
+
+/* ---------- the empty slot at the end of the board --------------------------------- */
+.add-slot {
+  flex: none; width: 150px; min-height: 220px; border-radius: 18px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(255, 255, 255, 0.025) 10px 20px);
+  border: 2px dashed var(--c-line-strong); color: var(--c-text-dim);
+  font-family: var(--font-label, var(--font-ui)); font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.add-slot:hover, .add-slot[aria-expanded="true"] { border-color: var(--c-accent); color: var(--c-accent); transform: translateY(-2px); box-shadow: 0 0 26px rgba(255, 122, 26, 0.18); }
+.add-plus { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font: 300 38px/1 var(--font-ui); background: var(--c-panel-3); box-shadow: 0 4px 0 #000; }
+.add-slot:hover .add-plus { background: var(--c-accent); color: #1a0b02; }
+.pick-pop { width: 290px; max-height: min(460px, 70vh); overflow: auto; }
+.pick-opt { display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: center; width: 100%; text-align: left; padding: 8px; border-radius: var(--radius-md); background: none; border: 0; cursor: pointer; color: var(--c-text); }
+.pick-opt:hover, .pick-opt:focus-visible { background: var(--c-panel-2); outline: none; }
+.pick-opt b { display: block; font-size: 14px; }
+.pick-opt small { display: block; font-size: 12px; color: var(--c-text-dim); }
+.pick-swatch { width: 14px; height: 30px; border-radius: 4px; background: var(--pedal); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+
+/* ---------- sample list: your recordings ------------------------------------------ */
+.sample-list { max-height: 420px; overflow: auto; padding-right: 2px; }
+.sample-kind.mine { background: var(--c-accent); color: #1a0b02; }
+.slots-hint { padding: 8px 10px; border: 1px dashed var(--c-line-strong); border-radius: var(--radius-sm); line-height: 1.45; }
+.slots-hint b { color: var(--c-text); font-weight: 600; }
+
+/* ---------- save and share boards ------------------------------------------------ */
+.board-btn { display: inline-grid; place-items: center; }
+.mine-board { position: relative; cursor: pointer; border-style: dashed; }
+.mine-board .preset-text { color: var(--c-accent); }
+.mb-del { position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: none; color: var(--c-text-faint); font-size: 16px; cursor: pointer; }
+.mb-del:hover { background: var(--c-err); color: #fff; }
+
+/* ---------- phones: a lighter header, and the chain tools wrap ------------------- */
+@media (max-width: 760px) {
+  .site-nav a { display: none; }
+  .look-btn { padding: 6px 10px; }
+  .look-btn span:last-child { display: none; }
+  .chain-head .chain-tools { flex: 1 1 100%; }
+  .tilt { display: none !important; }
+}
