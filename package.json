@@ -11,6 +11,7 @@
     "test:browser": "node tests/browser/run.mjs",
     "bench": "node tools/bench.js",
     "soak": "node tools/soak.js",
+    "knobs": "node tools/knob-check.js",
     "render": "node tools/render.js",
     "levels": "node tools/preset-levels.js"
   },

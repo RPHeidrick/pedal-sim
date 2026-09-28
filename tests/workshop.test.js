@@ -52,7 +52,8 @@ test('describe your sound: words become sensible boards', async () => {
     ['heavy scooped metal distortion with lots of bass', (r) => r.pedals.some((p) => p.key === 'tone-stack' && p.values.Middle < 0.35 && p.values.Bass > 0.6)],
     ['clean and bright', (r) => r.pedals.every((p) => ['jfet-boost', 'tone-stack'].includes(p.key))],
     ['singing lead with sustain for solos', (r) => r.pedals.length >= 2],
-    ['a little dark overdrive', (r) => r.pedals.some((p) => (p.values.Tone ?? 1) < 0.5)],
+    // darker: a Tone turned down, or the Blues OD's Tone turned up (it adds low end; see tools/knob-check.js)
+    ['a little dark overdrive', (r) => r.pedals.some((p) => (p.key === 'blues-od' ? (p.values.Tone ?? 0) > 0.5 : (p.values.Tone ?? 1) < 0.5))],
     ['aggressive silicon fuzz', (r) => r.pedals.some((p) => p.key === 'reverse-parallel-fuzz' && p.variant === 0)],
     ['vintage germanium fuzz', (r) => r.pedals.some((p) => (p.key === 'reverse-parallel-fuzz' && p.variant === 1) || p.key === 'germanium-fuzz')],
     ['asdfgh', (r) => r.pedals.length >= 1 && r.guess],

@@ -3,7 +3,7 @@
  * what every knob does, and a "Build it yourself" button.
  */
 import { hooks } from '../core.js';
-import { entryByKey, typeName, knobHelp, niceLabel, sameJob } from './library.js';
+import { entryByKey, typeName, knobHelp, niceLabel, sameJob, isDigital } from './library.js';
 import { knobRole } from '../../circuits/index.js';
 
 let infoOpen = null; // { pop, btn } while a card is showing
@@ -49,8 +49,15 @@ export function toggleInfo(p, btn) {
   tip.className = 'info-tip';
   tip.textContent = 'Tip: double-click a knob to put it back where it started.';
   pop.append(tip);
+  if (isDigital(entry)) {
+    const note = document.createElement('p');
+    note.className = 'info-tip';
+    note.textContent = 'Digital model: this effect copies the sound of an analog pedal in software. It is not a circuit simulation, so there is nothing to build.';
+    pop.append(note);
+  }
   const build = document.createElement('button');
   build.className = 'btn-secondary pedal-build';
+  build.hidden = isDigital(entry);
   build.textContent = 'Build it yourself';
   build.title = 'Parts list, schematic, wiring, drill template and steps to build this pedal for real';
   build.addEventListener('click', () => { closeInfo(); hooks.openBuild(entry, p.variant); });

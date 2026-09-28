@@ -503,10 +503,12 @@ export function elaborate(ast) {
 
   // --- annotations (*@pot, *@switch, *@pedal) --------------------------------
   let pedalName = ast.title || '';
+  let maxOversample = 0; // *@pedal oversample="1": the circuit makes (almost) no distortion, so it never needs oversampling
   const shortName = (n) => n.replace(/^.*\./, '').replace(/^[xr]/i, '');
   for (const a of ast.annotations) {
     if (a.kind === 'pedal') {
       if (a.params.name) pedalName = a.params.name;
+      if (a.params.oversample) maxOversample = Math.max(1, Math.round(Number(a.params.oversample)) || 0);
       continue;
     }
     if (a.kind !== 'pot' && a.kind !== 'switch' && a.kind !== 'control') { diag('info', `Unknown annotation *@${a.kind} ignored`, a); continue; }
@@ -592,6 +594,7 @@ export function elaborate(ast) {
   return {
     title: ast.title,
     name: pedalName || 'Untitled pedal',
+    maxOversample,
     nodes,
     elements,
     controls,

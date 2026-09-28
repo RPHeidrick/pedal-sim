@@ -96,6 +96,23 @@ Names match on both sides on purpose: when you rename or add a component, keep t
 4. Claude edits the code in your folder. Refresh `localhost:8080` and compare with the Figma frame.
 5. Commit on the phase branch. When the phase is done, merge into `main` to publish.
 
+## Phase 18 · Simpler first view
+
+Page **Phase 18 · Simpler first view**: before and after layout of the first screen at 1440 × 900, and the list of
+changes (short hero, 2 × 2 input tabs, one row chain toolbar, knob help below the pedal, folded guitar settings,
+"More" toggles in the library and How it works). The styles live in `styles/simple.css`, loaded last.
+
+## Phase 19 · Modulation, delay & reverb
+
+Page **Phase 19 · Modulation, delay & reverb**: the four input tiles, the six new pedals (Phaser and Tremolo as
+circuits; Chorus, Flanger, Analog Delay and Reverb with the "Digital model" line under the name) and the fourth
+library column.
+
+## Phase 20 · Finishing touches
+
+Page **Phase 20 · Finishing touches**: the phone board fitted to the screen, the Workshop tabs as a soft rectangle
+on phones, and the list of finishing touches (hiss reducer, design notes).
+
 ## Known differences between Figma and the site
 
 * Knobs in Figma show three fixed positions (0, 5, 10); the site draws any position, and the slider under each knob follows it.

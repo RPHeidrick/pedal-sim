@@ -5,6 +5,8 @@
  * oversampled sample. Circuit descriptions are elaborated on the main thread
  * (parsers are not needed here) and posted in as plain JSON.
  *
+ * Digital models (chorus, flanger, delay, reverb) sit in the same chain as DspPedal slots.
+ *
  * Signal flow per 128-sample block:
  *   input (digital) -> input cleanup (live guitar only: see input-cleanup.js) x inGain -> volts
  *     -> [pedal 1] -> [pedal 2] ... -> volts x outGain -> DC block -> output
@@ -34,6 +36,7 @@ import { Circuit } from '../../engine/js/circuit.js';
 import { Oversampler } from '../../engine/js/oversample.js';
 import { WasmEngine } from '../../engine/wasm/wasm-engine.js';
 import { InputCleanup } from './input-cleanup.js';
+import { createDsp } from './dsp-effects.js';
 
 const FADE_SAMPLES = 256; // bypass crossfade (about 5 ms at 48 kHz)
 
@@ -89,7 +92,7 @@ function makeCab(kind, fs) {
 }
 
 /**
- * Look-ahead peak limiter. The audio is delayed 1.5 ms so the gain can ease down
+ * Look-ahead peak limiter. The audio is delayed 0.6 ms so the gain can ease down
  * *before* a peak arrives instead of chopping it (which a zero-lookahead limiter
  * does, and which you hear as a click or crackle on hard pick attacks):
  *   1. needed gain per sample = ceiling / |x| (1 when below the ceiling)
@@ -101,7 +104,7 @@ function makeCab(kind, fs) {
  */
 class Limiter {
   constructor(fs, ceilingDb = -1) {
-    this.W = Math.max(8, Math.round(0.0015 * fs));
+    this.W = Math.max(8, Math.round(0.0006 * fs)); // keep in step with LIMITER_LOOKAHEAD in audio.js
     this.delay = new Float64Array(this.W);   // audio delay line
     this.hold = new Float64Array(this.W + 1).fill(1); // needed-gain history for the peak hold
     this.box = new Float64Array(this.W).fill(1);      // smoothed gain history for the average
@@ -157,6 +160,7 @@ class Pedal {
   build(fs, L, wasm) {
     this.free();
     if (this.linear) L = 1; // no harmonics generated, so no aliasing to remove
+    if (this.desc.maxOversample) L = Math.min(L, this.desc.maxOversample); // e.g. a phaser: sweeps, but barely distorts
     this.L = L;
     this.wasm = null;
     if (wasm) {
@@ -229,6 +233,46 @@ class Pedal {
   }
 }
 
+/**
+ * A digital model (chorus, flanger, delay, reverb: see dsp-effects.js) in a pedal slot. Same
+ * outside as a circuit Pedal: knobs, bypass with the same crossfade, and nothing to oversample.
+ * Bypass cuts the echoes and the reverb tail at once, like a true bypass pedal.
+ */
+class DspPedal {
+  constructor(uid, desc, controls, bypass, fs) {
+    this.uid = uid;
+    this.desc = desc;
+    this.controls = controls.slice();
+    this.mix = bypass ? 0 : 1;
+    this.target = this.mix;
+    this.dry = new Float64Array(128);
+    this.fx = createDsp(desc.dsp, fs, this.controls);
+  }
+  build() { /* no circuit and no oversampling: nothing to rebuild */ }
+  free() {}
+  get failures() { return 0; }
+  setControl(i, v) { this.controls[i] = v; this.fx.set(i, v); }
+  process(buf, n) {
+    if (this.mix === 0 && this.target === 0) return;
+    const fading = this.mix !== this.target || this.mix !== 1;
+    if (fading) {
+      if (this.dry.length < n) this.dry = new Float64Array(n);
+      this.dry.set(buf.subarray(0, n));
+    }
+    this.fx.process(buf, n);
+    if (!fading) return;
+    const step = 1 / FADE_SAMPLES, dry = this.dry;
+    for (let i = 0; i < n; i++) {
+      if (this.mix !== this.target) {
+        this.mix += this.mix < this.target ? step : -step;
+        if (Math.abs(this.mix - this.target) < step) this.mix = this.target;
+      }
+      buf[i] = dry[i] + (buf[i] - dry[i]) * this.mix;
+    }
+  }
+}
+const makePedal = (uid, desc, controls, bypass, fs, L, wasm) => (desc.dsp ? new DspPedal(uid, desc, controls, bypass, fs) : new Pedal(uid, desc, controls, bypass, fs, L, wasm));
+
 class PedalChain extends AudioWorkletProcessor {
   constructor() {
     super();
@@ -284,7 +328,7 @@ class PedalChain extends AudioWorkletProcessor {
     try {
       switch (m.type) {
         case 'add': {
-          const p = new Pedal(m.uid, m.desc, m.controls, m.bypass, sampleRate, this.L, this.backend);
+          const p = makePedal(m.uid, m.desc, m.controls, m.bypass, sampleRate, this.L, this.backend);
           const i = m.index == null ? this.pedals.length : m.index;
           this.pedals.splice(i, 0, p);
           break;
@@ -292,7 +336,7 @@ class PedalChain extends AudioWorkletProcessor {
         case 'replace': {
           const old = this.find(m.uid);
           if (!old) break;
-          const p = new Pedal(m.uid, m.desc, m.controls, old.target === 0, sampleRate, this.L, this.backend);
+          const p = makePedal(m.uid, m.desc, m.controls, old.target === 0, sampleRate, this.L, this.backend);
           this.pedals[this.pedals.indexOf(old)] = p;
           old.free();
           break;

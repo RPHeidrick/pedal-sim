@@ -23,6 +23,8 @@
 .deck-tempo input { width: 110px; }
 .deck-tools .toggle { min-width: 132px; font-weight: 700; }
 .deck-tools .toggle[aria-pressed="true"] { background: var(--c-accent); color: var(--hw-ink); border-color: var(--c-accent); }
+.chord-sets { display: inline-grid; grid-template-columns: repeat(4, auto); margin-bottom: var(--sp-3); max-width: 100%; }
+.chord-sets button { padding: 6px 14px; }
 .pads { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; margin-bottom: var(--sp-4); }
 .pad {
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 76px;
@@ -92,7 +94,7 @@
 .gs-note { margin: 12px 0 0; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; background: color-mix(in srgb, var(--c-warn) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c-warn) 40%, transparent); }
 .gs-meter { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; }
 .gs-meter .meter { flex: 1; height: 16px; }
-.gs-meter output { min-width: 7ch; text-align: right; }
+.gs-meter output { flex: none; min-width: 8ch; text-align: right; white-space: nowrap; }
 .gs-big { font-size: 16px; margin: 10px 0 14px; }
 .tuner { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 18px; margin: 10px 0; border-radius: var(--radius-lg); background: var(--c-bg); border: 1px solid var(--c-line); }
 .tuner-note { font: 900 72px/1 var(--font-display, var(--font-ui)); color: var(--c-text); transition: color 0.2s, text-shadow 0.2s; }

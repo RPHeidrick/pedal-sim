@@ -8,9 +8,9 @@
  * so the picture, the sound and the saved copy always agree.
  */
 import { $, audio, didThing, prefs, savePrefs, toast } from '../core.js';
-import { entries, entryByKey, loadDesc, typeName, knobHelp, niceLabel, sameJob, VARIANT_LABEL } from './library.js';
+import { entries, entryByKey, loadDesc, typeName, knobHelp, niceLabel, sameJob, VARIANT_LABEL, isDigital } from './library.js';
 import { closeInfo, toggleInfo } from './info-card.js';
-import { zoom } from './zoom.js';
+import { zoom, autoFit } from './zoom.js';
 import { setTrim } from '../audio/output-rack.js';
 import { createKnob } from '../looks/knob.js';
 import { attachTip, hideTip } from '../help/tips.js';
@@ -192,6 +192,7 @@ export function renderChain() {
   });
   if (board.length) root.append(cable(), addSlot());
   root.append(cable(), jack('Amp'));
+  autoFit();
 }
 
 /** An empty slot at the end of the board: click it to pick a pedal without scrolling. */
@@ -214,7 +215,7 @@ function addSlot() {
         o.style.setProperty('--pedal', e.color);
         o.innerHTML = '<span class="pick-swatch" aria-hidden="true"></span><span><b></b><small></small></span>';
         o.querySelector('b').textContent = e.name;
-        o.querySelector('small').textContent = `${typeName(e.type)}${e.origin === 'original' ? ' · My design' : ''}`;
+        o.querySelector('small').textContent = `${typeName(e.type)}${e.origin === 'original' ? ' · My design' : isDigital(e) ? ' · Digital model' : ''}`;
         o.addEventListener('click', () => { closeMenu(); addPedal(e.key).then(() => { markDirty(); didThing('pedal'); }); });
         pop.append(o);
       }
@@ -276,7 +277,7 @@ function pedalEl(p, index) {
     save();
     didThing('bypass');
   });
-  attachTip(fs, () => (p.bypass ? 'Off: the guitar goes straight through. Click to switch the pedal on.' : 'On: click to switch the pedal off and hear the difference.'));
+  attachTip(fs, () => (p.bypass ? 'Off: the guitar goes straight through. Click to switch the pedal on.' : 'On: click to switch the pedal off and hear the difference.'), { outside: el, delay: 600 });
 
   // tools: info, move, remove, paint
   const info = el.querySelector('.pedal-info');
@@ -307,7 +308,7 @@ function pedalEl(p, index) {
       onChange: (v) => { p.values[i] = v; audio.send({ type: 'control', uid: p.uid, index: i, value: v }); saveSoon(); markDirty(); didThing('knob'); },
     });
     const help = knobHelp(entry, c.label);
-    if (help) attachTip(k.el, `${niceLabel(c.label)}: ${help} ${sameJob(c.label)}`.trim());
+    if (help) attachTip(k.el, `${niceLabel(c.label)}: ${help} ${sameJob(c.label)}`.trim(), { outside: el, delay: 600 });
     knobs.append(k.el);
   });
 
@@ -329,6 +330,13 @@ function pedalEl(p, index) {
     sub.className = 'pedal-sub';
     sub.textContent = entry.variants[p.variant].name.replace(/^.*·\s*/, '') === 'Si' ? 'Silicon NPN · 2N3904' : 'Germanium PNP · 2N1309';
     el.querySelector('.pedal-name').after(sub);
+  } else if (isDigital(entry)) {
+    // digital models say so on the box, so nobody mistakes them for circuit simulations
+    const sub = document.createElement('div');
+    sub.className = 'pedal-sub';
+    sub.textContent = 'Digital model';
+    el.querySelector('.pedal-name').after(sub);
+    el.classList.add('digital');
   }
   return el;
 }

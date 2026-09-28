@@ -2,7 +2,7 @@
  * Input cleanup for a live guitar: runs on the audio thread, on the raw signal from the
  * interface or cable, BEFORE the pedals. (Samples and files are clean already and skip it.)
  *
- *   raw input ─► high pass ─► hum canceller ─► hiss low pass ─► noise gate ─► pedals
+ *   raw input ─► high pass ─► hum canceller ─► hiss low pass ─► noise gate ─► hiss reducer ─► pedals
  *
  * 1. High pass, 25 Hz (2nd order): removes DC offset and rumble below the lowest bass
  *    note (41 Hz), which would otherwise push fuzz circuits off their bias point.
@@ -25,6 +25,13 @@
  *    turned down smoothly instead of chopped. Threshold = measured noise floor + a margin,
  *    so it opens on the softest pick attack. Hold 60 ms and a slow release keep note tails
  *    natural. This matters most before a fuzz, which amplifies noise as much as the guitar.
+ *
+ * 5. Hiss reducer (a treble-only expander): the gate only acts between notes, but hiss is
+ *    also heard under quiet playing and as notes fade, and a fuzz makes it much louder.
+ *    The signal is split at 3 kHz (the treble part is whatever a 2nd order low pass leaves,
+ *    so the two parts always add back up exactly). While the
+ *    treble part is down near the measured noise floor, only that part is turned down,
+ *    up to 12 dB; a pick attack or a bright chord is far above it and passes untouched.
  *
  * Cost: about 60 multiply-adds per sample with 12 hum harmonics, well under 1% of a core.
  * No latency: every stage works sample by sample.
@@ -60,6 +67,7 @@ export const DEFAULT_CLEANUP = {
   humWidthHz: 0.5,       // width of each "notch"
   gate: 'medium',        // off | light | medium | strong
   gateDb: -60,           // gate threshold in dBFS of the raw input (set by the setup)
+  hiss: true,            // hiss reducer (treble expander) on
 };
 
 export class InputCleanup {
@@ -99,6 +107,15 @@ export class InputCleanup {
     this.gAtt = Math.exp(-1 / (0.001 * fs));    // gate opens in about 1 ms
     this.gRel = Math.exp(-1 / (0.15 * fs));     // and closes over about 150 ms
     this.holdN = Math.round(0.06 * fs);         // stays open 60 ms after the signal drops
+
+    // hiss reducer: 3 kHz split, treble envelope, treble gain between 12 dB down and 1
+    this.hissOn = o.hiss !== false;
+    this.xLp = new Biquad('lp', 3000, Math.SQRT1_2, fs);
+    this.hThresh = this.thresh * 0.5;            // treble threshold: 6 dB under the gate's
+    this.hEnv = this.hEnv || 0; this.hG = this.hG ?? 1;
+    this.hEnvRel = Math.exp(-1 / (0.08 * fs));
+    this.hAtt = Math.exp(-1 / (0.002 * fs));
+    this.hRel = Math.exp(-1 / (0.12 * fs));
   }
 
   /** Clean `n` samples of `buf` in place. Returns nothing; `gateOpen` says whether you were heard. */
@@ -149,6 +166,16 @@ export class InputCleanup {
         }
         g = target > g ? target + (g - target) * this.gAtt : target + (g - target) * this.gRel;
         x *= g;
+      }
+
+      if (this.hissOn) {
+        const lo = this.xLp.run(x); // 2nd order low pass; hi = the rest, so lo + hi == x exactly
+        const hi = x - lo, ah = hi < 0 ? -hi : hi;
+        this.hEnv = ah > this.hEnv ? ah : this.hEnv * this.hEnvRel;
+        const r = this.hEnv / this.hThresh;
+        const t = r >= 1 ? 1 : Math.max(0.25, r * r); // 1:3 below the threshold, at most 12 dB down
+        this.hG = t > this.hG ? t + (this.hG - t) * this.hAtt : t + (this.hG - t) * this.hRel;
+        x = lo + hi * this.hG;
       }
       buf[i] = x;
     }

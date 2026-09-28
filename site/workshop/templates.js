@@ -37,6 +37,7 @@ XVOL 0 out vo pot R=100k taper=log rot=0.6
 .end`;
     },
     pots: [['XGAIN', 'Gain'], ['XVOL', 'Volume']],
+    knobs: { Gain: 'How hard the boost pushes the next pedal. Most of the lift is in the top half of the turn, with a little grit near the end.', Volume: 'How loud the pedal is when it is on. Match it to the bypassed sound, or turn it up for a lift.' },
   },
   {
     id: 'overdrive', name: 'Overdrive', type: 'overdrive', color: '#3f9a5a',
@@ -81,6 +82,7 @@ XLEVEL 0 out ov pot R=100k taper=log rot=0.6
 .end`;
     },
     pots: [['XDRIVE', 'Drive'], ['XTONE', 'Tone'], ['XLEVEL', 'Level']],
+    knobs: { Drive: 'How much overdrive. Low is a light edge, high is a creamy lead tone with more low end.', Tone: 'Darker to brighter: turns the treble down or up.', Level: 'How loud the pedal is when it is on. Match it to the bypassed sound, or turn it up for a lift.' },
   },
   {
     id: 'distortion', name: 'Distortion', type: 'distortion', color: '#b8452e',
@@ -112,11 +114,12 @@ C6 o1 n2 1u
 R8 n2 cl 1k
 ${diodes}R9 cl t1 10k
 C7 t1 0 10n
-XTONE cl tw t1 pot R=50k taper=lin rot=0.5
+XTONE t1 tw cl pot R=50k taper=lin rot=0.5
 XLEVEL 0 out tw pot R=100k taper=log rot=0.55
 .end`;
     },
     pots: [['XDIST', 'Distortion'], ['XTONE', 'Tone'], ['XLEVEL', 'Level']],
+    knobs: { Distortion: 'How much distortion. All the way down it is almost silent; from the middle up it is thick and saturated.', Tone: 'Darker to brighter. Down tames the fizz, up adds bite.', Level: 'How loud the pedal is when it is on. Match it to the bypassed sound, or turn it up for a lift.' },
   },
   {
     id: 'fuzz', name: 'Two transistor fuzz', type: 'fuzz', color: '#c9412f',
@@ -145,6 +148,7 @@ XVOL 0 out vo pot R=500k taper=log rot=0.7
 ${models}.end`;
     },
     pots: [['XFUZZ', 'Fuzz'], ['XVOL', 'Volume']],
+    knobs: { Fuzz: 'Fine tunes the fuzz: up is a little brighter and more aggressive. This circuit is fuzzy at every setting.', Volume: 'How loud the pedal is when it is on. Match it to the bypassed sound, or turn it up for a lift.' },
   },
 ];
 

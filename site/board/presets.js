@@ -14,7 +14,7 @@ export const PRESETS = [
     id: 'clean', name: 'Clean and bright', level: 5, suits: ['electric', 'acoustic', 'bass'],
     text: 'No grit at all: a clean boost and an amp style tone stack. Hear what the guitar sounds like first.',
     pedals: [
-      { key: 'jfet-boost', values: { Gain: 0.35, Volume: 0.95 } },
+      { key: 'jfet-boost', values: { Gain: 0.1, Volume: 0.95 } },
       { key: 'tone-stack', values: { Treble: 0.75, Bass: 0.45, Middle: 0.6 } },
     ],
   },
@@ -44,6 +44,49 @@ export const PRESETS = [
       { key: 'tone-stack', values: { Treble: 0.6, Bass: 0.85, Middle: 0.15 } },
     ],
   },
+  // Phase 19: modulation, delay and reverb. Phaser and tremolo are circuits; chorus, flanger,
+  // delay and reverb are digital models (site/audio/dsp-effects.js).
+  {
+    id: 'swirl', name: 'Swirly clean', level: 7, suits: ['electric'],
+    text: 'A slow phaser swirl on a clean guitar, with a little room around it. Try the open chords.',
+    pedals: [
+      { key: 'phaser', values: { Rate: 0.35, Depth: 0.8 } },
+      { key: 'reverb', values: { Decay: 0.4, Tone: 0.5, Mix: 0.25 } },
+    ],
+  },
+  {
+    id: 'surf', name: 'Surf tremolo', level: 4, suits: ['electric'],
+    text: 'Pulsing tremolo into a big splashy reverb, the sound of 60s surf and spaghetti westerns.',
+    pedals: [
+      { key: 'tremolo', values: { Rate: 0.55, Depth: 0.75, Volume: 0.85 } },
+      { key: 'reverb', values: { Decay: 0.65, Tone: 0.6, Mix: 0.45 } },
+    ],
+  },
+  {
+    id: 'dreamy', name: 'Dreamy chorus', level: 7, suits: ['electric', 'acoustic'],
+    text: 'Shimmering chorus and a soft echo on clean chords. Lush and wide.',
+    pedals: [
+      { key: 'chorus', values: { Rate: 0.35, Depth: 0.55, Mix: 0.5 } },
+      { key: 'delay', values: { Time: 0.6, Repeats: 0.3, Mix: 0.25 } },
+    ],
+  },
+  {
+    id: 'ambient', name: 'Ambient lead', level: -8, suits: ['electric'],
+    text: 'A warm overdrive, long echoes and a big hall: notes that hang in the air. Try the single notes.',
+    pedals: [
+      { key: 'blues-od', values: { Gain: 0.45, Tone: 0.5 } },
+      { key: 'delay', values: { Time: 0.72, Repeats: 0.5, Mix: 0.4 } },
+      { key: 'reverb', values: { Decay: 0.75, Tone: 0.5, Mix: 0.35 } },
+    ],
+  },
+  {
+    id: 'jet', name: 'Jet fuzz', level: 2, suits: ['electric'],
+    text: 'Silicon fuzz through a flanger: the whooshing jet plane sound of 70s rock.',
+    pedals: [
+      { key: 'reverse-parallel-fuzz', variant: 0, values: { Mod: 0.5, Gain: 0.8, Volume: 0.6 } },
+      { key: 'flanger', values: { Rate: 0.25, Depth: 0.8, Feedback: 0.6 } },
+    ],
+  },
   // For acoustic guitar and bass. Their levels were measured with the electric riff; re-measure
   // (node tools/preset-levels.js) once an acoustic or bass recording is in samples/mine.
   {
@@ -51,7 +94,7 @@ export const PRESETS = [
     text: 'For acoustic guitar: less boom, more shimmer. The tone stack trims the low end and lifts the strings, and a clean boost brings the level back up.',
     pedals: [
       { key: 'tone-stack', values: { Treble: 0.72, Bass: 0.3, Middle: 0.55 } },
-      { key: 'jfet-boost', values: { Gain: 0.3, Volume: 0.95 } },
+      { key: 'jfet-boost', values: { Gain: 0.08, Volume: 0.95 } },
     ],
   },
   {

@@ -1,0 +1,65 @@
+* Four stage phaser (generic JFET all-pass circuit with a triangle wave LFO)
+*@pedal name="Phaser" oversample="1"
+*@pot XRATE label="Rate"
+*@pot XDEPTH label="Depth"
+V1 vcc 0 9
+Vin in 0 0
+* 4.5 V reference
+R1 vcc vref 47k
+R2 vref 0 47k
+C1 vref 0 47u
+* input buffer
+C2 in n1 100n
+R3 n1 vref 1Meg
+XU1 n1 s0 vcc 0 s0 TL072
+* four all-pass stages: each shifts the phase of the guitar by up to 180 degrees around a
+* frequency set by its JFET, used as a voltage controlled resistor
+R10 s0 m1 10k
+R11 m1 s1 10k
+C10 s0 p1 47n
+J1 p1 g1 vref 2N5457
+R12 p1 vref 1Meg
+XU2 p1 m1 vcc 0 s1 TL072
+R20 s1 m2 10k
+R21 m2 s2 10k
+C20 s1 p2 47n
+J2 p2 g2 vref 2N5457
+R22 p2 vref 1Meg
+XU3 p2 m2 vcc 0 s2 TL072
+R30 s2 m3 10k
+R31 m3 s3 10k
+C30 s2 p3 47n
+J3 p3 g3 vref 2N5457
+R32 p3 vref 1Meg
+XU4 p3 m3 vcc 0 s3 TL072
+R40 s3 m4 10k
+R41 m4 s4 10k
+C40 s3 p4 47n
+J4 p4 g4 vref 2N5457
+R42 p4 vref 1Meg
+XU5 p4 m4 vcc 0 s4 TL072
+* mix: the shifted signal added to the dry one cancels some frequencies (the moving notches)
+R50 s0 mix 10k
+R51 s4 mix 10k
+C50 mix out 1u
+R52 out 0 100k
+* LFO: integrator (XU6) and Schmitt trigger (XU7) make a slow triangle wave on "tri"
+XRATE rr rr sq pot R=2.5Meg taper=rlog rot=0.5
+R60 rr ni 100k
+C60 ni tri 1u
+XU6 vref ni vcc 0 tri LM358
+R61 tri sp 47k
+R62 sq sp 100k
+XU7 sp vref vcc 0 sqo LM358
+* 10k and 10n soften the square wave's edges a little (and keep the solver on one clean path)
+R63 sqo sq 10k
+C63 sq 0 10n
+* Depth: how much of the triangle reaches the JFET gates, around a fixed bias
+XDEPTH vref dw tri pot R=100k taper=lin rot=0.7
+R70 dw gb 100k
+R71 gb 0 470k
+R72 gb g1 1Meg
+R73 gb g2 1Meg
+R74 gb g3 1Meg
+R75 gb g4 1Meg
+.end

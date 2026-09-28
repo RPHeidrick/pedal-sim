@@ -30,6 +30,16 @@ $('in-gain').addEventListener('input', () => { applyInGain(); didThing('input');
 if (prefs.inGain != null) $('in-gain').value = prefs.inGain;
 applyInGain();
 
+// --- response: how small a sound card buffer to ask for (read when the sound starts) ---------
+audio.lowLatency = prefs.response !== 'steady';
+$('response').value = audio.lowLatency ? 'fast' : 'steady';
+$('response').addEventListener('change', () => {
+  audio.lowLatency = $('response').value !== 'steady';
+  savePrefs({ response: $('response').value });
+  // the buffer size is fixed once the sound has started, so it applies from the next page load
+  if (audio.ctx) toast('Reload the page to apply the new response setting.', { label: 'Reload', run: () => location.reload() });
+});
+
 // --- samples ---------------------------------------------------------------------------------
 /** The chosen sample (it keeps playing when you switch to another input and back). */
 export let sampleId = sampleById(prefs.sample || DEFAULT_SAMPLE).id;
@@ -206,6 +216,7 @@ function renderCleanup() {
   const c = { ...DEFAULT_CLEANUP, ...audio.cleanup };
   $('cleanup-on').checked = c.enabled;
   $('cleanup-gate').value = c.gate;
+  $('cleanup-hiss').checked = c.hiss !== false;
   $('cleanup').classList.toggle('off', !c.enabled);
   $('cleanup-summary').textContent = c.humHz
     ? `Removing rumble, hiss and ${c.humHz.toFixed(2)} Hz hum (${c.harmonics.length} harmonic${c.harmonics.length === 1 ? '' : 's'}). Gate opens above ${c.gateDb} dB.`
@@ -216,6 +227,7 @@ audio.setCleanup(prefs.cleanup || { enabled: true, gate: 'off' });
 renderCleanup();
 $('cleanup-on').addEventListener('change', () => applyCleanup({ enabled: $('cleanup-on').checked }));
 $('cleanup-gate').addEventListener('change', () => applyCleanup({ gate: $('cleanup-gate').value }));
+$('cleanup-hiss').addEventListener('change', () => applyCleanup({ hiss: $('cleanup-hiss').checked }));
 
 /** Make sure the sound is on and the live guitar is the input (for the check and the test clip). */
 async function ensureLive() {

@@ -1,0 +1,83 @@
+/*
+ * Phase 18: the simpler first view. Loaded last so it can calm every look at once.
+ * Figma: "Phase 18 · Simpler first view".
+ *   - a short hero, so the pedalboard is on screen without scrolling
+ *   - long explanations fold away behind "More" (details/summary), never removed
+ *   - input tabs in two rows with full names, so nothing is cut off
+ *   - live numbers keep a fixed width (see app.css), so nothing moves while they update
+ */
+
+/* hero: one line of title, one line of text, the guide button on the right */
+:root[data-theme] .hero { padding: clamp(18px, 2.4vw, 30px) 0 clamp(14px, 1.6vw, 20px); align-items: flex-end; gap: var(--sp-4); }
+:root[data-theme] .hero h1 { font-size: clamp(24px, 2.4vw, 36px); line-height: 1.05; max-width: none; }
+:root[data-theme] .hero h1 em { font-size: 1em; }
+:root[data-theme] .hero .lede { margin-top: 8px; font-size: 15px; }
+:root[data-theme] .hero .hero-actions { margin-top: 0; flex: none; }
+:root[data-theme] .hero .btn-primary { font-size: 15px; padding: 11px 20px; }
+.hero .tubes { display: none; }
+
+/* input choice: four tiles, 2 x 2, each with a small icon and its full name. No outer pill
+   (four choices in two rows looked squashed inside an oval), in every look. */
+:root[data-theme] .rack-in .seg { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 0; background: none; border: 0; border-radius: 0; }
+:root[data-theme] .rack-in .seg button {
+  display: flex; align-items: center; justify-content: flex-start; gap: 7px; min-height: 40px; padding: 7px 9px;
+  border: 1px solid var(--c-line-strong); border-radius: 10px; font-size: 12px; line-height: 1.15; text-align: left; white-space: normal; overflow: visible;
+}
+:root[data-theme] .rack-in .seg button:hover:not([aria-selected="true"]) { border-color: var(--c-accent); color: var(--c-text); }
+:root[data-theme] .rack-in .seg button[aria-selected="true"] { border-color: transparent; }
+.rack-in .seg .tab-ic { width: 16px; height: 16px; flex: none; }
+
+/* numbers in the racks: only the value uses the display font, the label stays readable */
+.stat-line > span { font-family: var(--font-ui); font-size: 12px; letter-spacing: 0; text-transform: none; color: var(--c-text-dim); text-shadow: none; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* the chain toolbar: the board speaks for itself, so its title is for screen readers only */
+.chain-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.chain-head { position: relative; }
+
+/* "More" toggles */
+.lib-more, .step-more { margin-top: 4px; }
+.lib-more > summary, .step-more > summary { cursor: pointer; font-size: 12px; color: var(--c-accent); list-style: none; display: inline-flex; align-items: center; gap: 4px; }
+.lib-more > summary::-webkit-details-marker, .step-more > summary::-webkit-details-marker { display: none; }
+.lib-more > summary::after, .step-more > summary::after { content: "▾"; font-size: 10px; transition: transform 0.15s; }
+.lib-more[open] > summary::after, .step-more[open] > summary::after { transform: rotate(180deg); }
+.lib-more[open] > summary, .step-more[open] > summary { margin-bottom: 4px; }
+.step-more p { margin: 0; font-size: 13px; color: var(--c-text-dim); line-height: 1.5; }
+
+/* the effects primer folds away above the library */
+.basics { margin: 0 0 var(--sp-5); border: 1px solid var(--c-line); border-radius: var(--radius-md); background: var(--c-panel); }
+.basics > summary { cursor: pointer; padding: 12px 16px; font-weight: 600; font-size: 14px; color: var(--c-text); }
+.basics[open] > summary { border-bottom: 1px solid var(--c-line); }
+.basics .fx-types { padding: var(--sp-4); margin: 0; }
+
+/* the Guitar tab's advanced settings */
+#live-more > summary { display: flex; align-items: center; gap: 8px; }
+#live-more .gate-led { margin-left: auto; }
+#live-more .more-body { display: flex; flex-direction: column; gap: 10px; }
+
+/* chain toolbar: never wider than the board. Tools share the row with Power on and wrap
+   to a second row on narrow screens instead of spilling over the Output panel. */
+.chain-head { flex-wrap: wrap; row-gap: 8px; }
+.chain-head .chain-tools { flex: 1 1 auto; min-width: 0; justify-content: flex-end; flex-wrap: wrap; row-gap: 6px; }
+:root[data-theme] .chain-head .power { min-width: 0; width: auto; }
+.toggle.compare { min-width: 0; }
+/* the limiter already reports in the Output panel ("Peak limiter"), so the board's TILT light goes */
+.chain-head .tilt { display: none !important; }
+.chain-head { column-gap: 8px; }
+.chain-head .chain-tools { column-gap: 6px; }
+.chain-head .zoom button { padding: 0 6px; }
+.chain-head .zoom .zoom-level { min-width: 40px; }
+
+/* Phase 19: four library columns (gain, modulation, delay & reverb, filter) and six knob role cards */
+.lib-cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1250px) { .lib-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .lib-cols { grid-template-columns: minmax(0, 1fr); } }
+.knob-roles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .knob-roles { grid-template-columns: minmax(0, 1fr); } }
+.badge.digital { opacity: 0.85; }
+
+/* Phase 20: on a phone the Workshop tabs stack, and a stack of options inside an oval looks
+   squashed (the same problem the input tabs had), so they get soft rectangles there */
+@media (max-width: 700px) {
+  :root[data-theme] .ws-tabs { border-radius: 12px; }
+  :root[data-theme] .ws-tabs button { border-radius: 8px; }
+}

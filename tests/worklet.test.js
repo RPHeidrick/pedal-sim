@@ -35,9 +35,9 @@ test('peak limiter keeps the output under full scale even when driven 40 dB too 
   assert.ok(stats.some((s) => s.limitDb < -30), 'limiter reports its gain reduction');
 });
 
-const LOOKAHEAD = Math.round(0.0015 * 48000); // the limiter delays the audio this many samples
+const LOOKAHEAD = Math.round(0.0006 * 48000); // the limiter delays the audio this many samples
 
-test('limiter is transparent below its ceiling (only a 1.5 ms delay)', () => {
+test('limiter is transparent below its ceiling (only a 0.6 ms delay)', () => {
   const c = new Chain();
   c.onMessage({ type: 'settings', inGain: 1, outGain: 1, cab: 'off' });
   const x = sine(440, 0.5, 9600);

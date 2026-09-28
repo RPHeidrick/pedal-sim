@@ -8,6 +8,7 @@ import { PRESETS } from '../site/board/presets.js';
 
 const { SAMPLES, DEFAULT_SAMPLE, sampleById } = await import('../site/inputs/samples.js');
 
+import { dspById, dspDesc } from '../site/audio/dsp-effects.js';
 const lib = (f) => loadNetlist(fs.readFileSync(new URL(`../circuits/${f}`, import.meta.url), 'utf8'), { fileName: f });
 
 test('every starter board uses library pedals and real knob labels, with a sane volume', () => {
@@ -16,10 +17,11 @@ test('every starter board uses library pedals and real knob labels, with a sane 
     assert.ok(pr.level >= -30 && pr.level <= 18, `${pr.id} volume`);
     for (const pp of pr.pedals) {
       const variants = STARTER_PEDALS.filter((p) => p.family === pp.key || p.id === pp.key);
-      assert.ok(variants.length, `${pr.id}: no pedal ${pp.key}`);
-      const v = variants[pp.variant || 0];
+      const digital = dspById(pp.key);
+      assert.ok(variants.length || digital, `${pr.id}: no pedal ${pp.key}`);
+      const v = digital ? { id: pp.key } : variants[pp.variant || 0];
       assert.ok(v, `${pr.id}: ${pp.key} has no variant ${pp.variant}`);
-      const labels = lib(v.file).controls.map((c) => c.label);
+      const labels = (digital ? dspDesc(pp.key) : lib(v.file)).controls.map((c) => c.label);
       for (const [k, val] of Object.entries(pp.values)) {
         assert.ok(labels.includes(k), `${pr.id}: ${v.id} has no knob "${k}" (has ${labels.join(', ')})`);
         assert.ok(val >= 0 && val <= 1, `${pr.id}: ${k}=${val}`);
@@ -95,8 +97,9 @@ test('every audio file in a samples/ subfolder is listed with its source', async
   for (const r of MY_RECORDINGS) assert.ok(r.slot >= 1 && r.slot <= 16 && ['electric', 'acoustic', 'bass'].includes(r.group) && r.name, `recording ${r.file}`);
   assert.equal(MY_RECORDINGS.filter((r) => r.default).length <= 1, true, 'only one first sound');
   assert.equal(NOTES_LICENSE.license, 'CC0');
-  for (const f of audioIn('notes')) assert.ok(NOTES.some((n) => n.file === f), `samples/notes/${f} is not listed in site/inputs/notes.js`);
-  for (const n of NOTES) assert.ok(fs.existsSync(new URL(`../samples/notes/${n.file}`, import.meta.url)), `missing note ${n.file}`);
+  const noteFiles = (n) => [n.file, ...(n.takes || []), ...(n.soft ? [n.soft] : [])];
+  for (const f of audioIn('notes')) assert.ok(NOTES.some((n) => noteFiles(n).includes(f)), `samples/notes/${f} is not listed in site/inputs/notes.js`);
+  for (const n of NOTES) for (const f of noteFiles(n)) assert.ok(fs.existsSync(new URL(`../samples/notes/${f}`, import.meta.url)), `missing note ${f}`);
   // every note a guitar in standard tuning can play (open E2 to the 15th fret on the high E) is within 2 semitones of a recording
   for (let m = 40; m <= 79; m++) assert.ok(Math.abs(nearestNote(m).shift) <= 2, `MIDI ${m}`);
   // no stray folders: only mine/ and notes/ may hold audio besides the listed samples

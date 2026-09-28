@@ -8,7 +8,7 @@ import { WasmEngine } from '../engine/wasm/wasm-engine.js';
 import { pluck, sine } from '../engine/js/signals.js';
 
 const wasmPath = new URL('../engine/wasm/pedal-engine.wasm', import.meta.url);
-const pedals = ['rp-fuzz-si', 'rp-fuzz-ge', 'blues-od', 'germanium-fuzz', 'op-amp-drive', 'jfet-boost', 'tone-stack'];
+const pedals = ['rp-fuzz-si', 'rp-fuzz-ge', 'blues-od', 'germanium-fuzz', 'op-amp-drive', 'jfet-boost', 'tone-stack', 'phaser', 'tremolo'];
 
 /** Reference: the JavaScript engine, wired exactly like the C++ Processor (oversampler + 5 Hz DC block). */
 function jsRender(desc, controls, input, fs, L) {

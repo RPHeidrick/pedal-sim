@@ -26,6 +26,17 @@ function setZoom(z, anchor = null) {
   savePrefs({ zoom: z });
 }
 
+/** True once the visitor has zoomed by hand this visit: the phone auto fit then leaves it alone. */
+let zoomedByHand = false;
+/**
+ * On a phone, keep the whole board in view as pedals come and go (a pedal cut off at the
+ * edge looks broken), unless the visitor has chosen a zoom themselves.
+ */
+export function autoFit() {
+  if (!zoomSupported || zoomedByHand || window.innerWidth > 760) return;
+  requestAnimationFrame(fitZoom);
+}
+
 /** Zoom so the whole chain fits the width of the board (never above 125%). */
 export function fitZoom() {
   const chain = $('chain'), inner = $('chain-inner');
@@ -42,6 +53,7 @@ export function fitZoom() {
 if (zoomSupported) {
   document.querySelectorAll('[data-zoom]').forEach((b) => b.addEventListener('click', () => {
     const act = b.dataset.zoom;
+    zoomedByHand = act !== 'fit';
     if (act === 'in') setZoom(zoom * ZOOM_STEP);
     else if (act === 'out') setZoom(zoom / ZOOM_STEP);
     else if (act === 'reset') setZoom(1);
@@ -50,6 +62,7 @@ if (zoomSupported) {
   $('chain').addEventListener('wheel', (e) => {
     if (!e.ctrlKey && !e.metaKey) return;
     e.preventDefault();
+    zoomedByHand = true;
     const r = $('chain').getBoundingClientRect();
     setZoom(zoom * Math.exp(-e.deltaY * 0.0025), e.clientX - r.left);
   }, { passive: false });

@@ -4,10 +4,14 @@ This folder holds Richard Heidrick's own guitar recordings. They show up first i
 
 ## Record one
 
+**Easiest: record on the site.** Choose **Your guitar**, run the setup once, then press **Record a riff**. It records the cleaned-up guitar (before the pedals) and saves a WAV in your Downloads folder, ready for the step below.
+
+**Or record in any audio program:**
+
 1. **Guitar straight into the computer.** An audio interface's instrument (Hi-Z) input, or a **USB guitar cable** (it shows up as a USB microphone, often called something like "... Guitar Adapter"). No amp, no amp simulator, no pedals, no plugins.
 2. **Guitar volume and tone knobs fully up.**
 3. **Level:** your loudest notes should peak around -12 to -6 dB on the recording meter, never touching 0 dB. With a USB guitar cable, Windows sets its level in Sound settings, under Input, then Device properties.
-4. **Record** in any program that saves WAV (Audacity is free). 44.1 or 48 kHz, 16 or 24-bit. Mono or stereo are both fine.
+4. **Record** in any program that saves WAV (free audio editors work fine). 44.1 or 48 kHz, 16 or 24-bit. Mono or stereo are both fine.
 5. **8 to 20 seconds.** Start playing right away and let the last note ring out. The tool trims the silence at both ends.
 6. **Export as WAV**, not MP3.
 

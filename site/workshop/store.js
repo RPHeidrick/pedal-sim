@@ -33,7 +33,7 @@ export function creationEntry(c) {
   const variantId = `custom:${c.id}:${hash(netlist)}`;
   return {
     key: `custom:${c.id}`, name: c.name, color: c.color || t.color, type: t.type, category: 'gain', origin: 'custom',
-    blurb: `${t.name}: ${recipe}. Made in the Pedal Workshop.`, sounds: '', knobs: {},
+    blurb: `${t.name}: ${recipe}. Made in the Pedal Workshop.`, sounds: '', knobs: t.knobs || {},
     variants: [{ id: variantId, name: c.name, netlist, file: `${slug(c.name)}.cir` }], creation: c,
   };
 }

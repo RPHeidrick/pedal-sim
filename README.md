@@ -72,6 +72,17 @@ The circuits run on the browser's real-time audio thread (AudioWorklet). By defa
 | Op Amp Drive | Op amp soft clipper with diodes in the feedback loop |
 | JFET Boost | J201 common source clean boost |
 | Tone Stack | Passive treble / bass / middle tone stack |
+| Phaser | Four JFET all-pass stages swept by an op amp triangle wave LFO (integrator and Schmitt trigger), all simulated, oscillator included |
+| Tremolo | A JFET shunting the guitar in pulses, driven by the same kind of triangle wave LFO |
+
+**Digital models**, labeled "Digital model" on the site. Their analog versions depend on bucket brigade delay chips or a physical spring, which cannot be solved part by part in real time, so they are written as signal processing that copies the analog character ([site/audio/dsp-effects.js](site/audio/dsp-effects.js)):
+
+| Effect | Model |
+|---|---|
+| Chorus | Short delay wobbled by a triangle LFO, slightly dark like a bucket brigade chip |
+| Flanger | Very short swept delay with feedback |
+| Analog Delay | 60 to 800 ms echo; each repeat darker, softly saturated, with a slight wobble |
+| Reverb | Room reverb (parallel damped combs into series all-passes), 0.3 to 5 s decay |
 
 To try your own circuit, open the [engine bench](bench.html) and load an LTspice `.asc` schematic or a `.cir` netlist from your computer. Nothing you load is uploaded; it stays in your browser.
 
@@ -112,7 +123,8 @@ pedal-sim/
 │   ├── board/            the pedal chain, library, info cards, starter boards, save and share, zoom
 │   ├── inputs/           Input panel: samples, live guitar setup, noise check (input-check.js), tuner, digital guitar
 │   ├── audio/            Output panel, power, meters; audio.js (browser audio), pedal-worklet.js (audio thread),
-│   │                     input-cleanup.js (hum, hiss and noise removal for a live guitar)
+│   │                     input-cleanup.js (hum, hiss and noise removal for a live guitar),
+│   │                     dsp-effects.js (the digital models: chorus, flanger, delay, reverb)
 │   ├── looks/            themes, paint shop, motion effects, knobs
 │   ├── help/             guided tour and tooltips
 │   ├── workshop/         Pedal Workshop (describe your sound, build a pedal)
@@ -122,7 +134,7 @@ pedal-sim/
 ├── samples/              audio: CC0 riffs, notes/ for the digital guitar, mine/ for my recordings
 │
 ├── tests/                automatic tests (npm test), browser/ (npm run test:browser)
-├── tools/                scripts: local server, speed test, soak test, recording importer
+├── tools/                scripts: local server, speed test, soak test, knob check, recording importer
 └── design/FIGMA.md       how the Figma file maps to the code
 ```
 
@@ -136,17 +148,18 @@ Requires Node 20 or newer. Double-click `run-local.cmd` (Windows), or:
 npm start               # http://localhost:8080
 npm test                # 111 automatic tests: engine, devices, parser, LTspice import, C++ vs JS,
                         # audio chain, guitar input cleanup, damaged files and links, every pedal pushed to its limits
-npm run test:browser    # 26 checks that click through the real site in a hidden Chrome
+npm run test:browser    # 30 checks that click through the real site in a hidden Chrome
                         # (first time only: npm install, then npx playwright install chromium)
 npm run bench           # speed of every pedal, C++ vs JavaScript
 npm run soak            # every pedal and every Workshop combination for a minute each, knobs sweeping
+npm run knobs           # turns every knob and measures what really changes (level, grit, bass, mid, treble)
 ```
 
 See [WORKFLOW.md](WORKFLOW.md) for the branch-per-phase workflow and how to publish, and [design/FIGMA.md](design/FIGMA.md) for the Figma design system.
 
 ## Roadmap
 
-1. Modulation circuits (chorus, phaser, tremolo)
-2. Stripboard layouts on the build sheets
+1. Stripboard layouts on the build sheets
+2. More Workshop templates (modulation)
 
 Designed and built by Richard Heidrick.

@@ -41,6 +41,8 @@ export function describeSound(input) {
   // tone words first: they decide knob positions on the drive pedals
   const bright = n.bright > n.dark ? 1 : n.dark > n.bright ? -1 : 0;
   const tone = clamp(0.55 + bright * (0.22 + Math.abs(amt) * 0.05));
+  // the Blues OD's Tone sets how much low end reaches the drive (up = fuller and warmer), so it turns the other way
+  const body = clamp(0.55 - bright * (0.22 + Math.abs(amt) * 0.05));
 
   const kind = n.fuzz ? 'fuzz' : n.heavy ? 'heavy' : n.crunch || n.mids || n.lead ? 'crunch' : n.clean ? 'clean' : guess ? 'crunch' : n.boost ? 'clean' : 'crunch';
 
@@ -51,7 +53,7 @@ export function describeSound(input) {
     level = si ? -1 : 6;
   } else if (kind === 'heavy') {
     pedals.push({ key: 'op-amp-drive', values: { Drive: push(0.85, 0.1), Tone: tone, Level: 0.6 } });
-    pedals.push({ key: 'blues-od', values: { Gain: push(0.75, 0.1), Tone: tone } });
+    pedals.push({ key: 'blues-od', values: { Gain: push(0.75, 0.1), Tone: body } });
     why.push('High gain: one overdrive pushing another stacks up into thick distortion with long sustain.');
     level = -9;
   } else if (kind === 'crunch') {
@@ -60,7 +62,7 @@ export function describeSound(input) {
       why.push('Mid focused drive: the Op Amp Drive trims the lows before clipping, so notes cut through.');
       level = 8;
     } else {
-      pedals.push({ key: 'blues-od', values: { Gain: push(n.lead ? 0.6 : 0.42), Tone: tone } });
+      pedals.push({ key: 'blues-od', values: { Gain: push(n.lead ? 0.6 : 0.42), Tone: body } });
       why.push('Crunch: my Blues OD, a warm overdrive that stays clear and cleans up when you play softly.');
       level = -6;
     }

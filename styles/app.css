@@ -159,8 +159,12 @@ input[type=range] { width: 100%; accent-color: var(--c-accent); }
 .hint { margin: 0; font-size: 12px; color: var(--c-text-faint); }
 .readout { margin: 0; font-size: 12px; color: var(--c-text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .readout, output, .mono { font-variant-numeric: tabular-nums; }
+/* Live numbers never wrap or change width, so nothing around them moves while they update. */
+output { white-space: nowrap; }
+.field > span > output, .stat-line output { flex: none; min-width: 8ch; text-align: right; }
+.field > span { gap: 8px; }
 .stat-line { display: flex; justify-content: space-between; gap: var(--sp-2); }
-.stat-line output { min-width: 7ch; text-align: right; color: var(--c-text); }
+.stat-line output { color: var(--c-text); }
 .stat-lines { display: flex; flex-direction: column; }
 .stat-lines span { overflow: hidden; text-overflow: ellipsis; }
 .src-extra { display: flex; flex-direction: column; gap: 8px; }
@@ -410,7 +414,7 @@ body.live .pedal:not(.off) .pedal-led { background: var(--hw-led-on); box-shadow
 .sc-steps { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.55; color: var(--c-text-dim); display: flex; flex-direction: column; gap: 8px; }
 .sc-steps strong { color: var(--c-text); }
 .sc-volume { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
-.sc-volume output { min-width: 6ch; font-size: 12px; text-align: right; }
+.sc-volume output { flex: none; min-width: 8ch; font-size: 12px; text-align: right; }
 .sound-check .check { margin-top: 16px; }
 .sc-actions { display: flex; justify-content: flex-end; margin-top: 18px; }
 .tour-keys { margin: 10px 0 0; font-size: 11px; color: var(--c-text-faint); }

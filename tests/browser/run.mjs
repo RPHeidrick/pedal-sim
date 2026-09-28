@@ -168,6 +168,33 @@ check('starter board loads, Undo puts the old board back', async (b) => {
   return p;
 });
 
+check('modulation, delay and reverb pedals play, and digital models say so', async (b) => {
+  const p = await openPage(b);
+  await powerOn(p);
+  for (const key of ['phaser', 'tremolo', 'chorus', 'flanger', 'delay', 'reverb']) {
+    await p.click(`#lib-cols .lib-card:has(h4:text-is("${{ phaser: 'Phaser', tremolo: 'Tremolo', chorus: 'Chorus', flanger: 'Flanger', delay: 'Analog Delay', reverb: 'Reverb' }[key]}")) .add`);
+  }
+  await p.waitForFunction(() => document.querySelectorAll('#chain .pedal').length === 7);
+  // the tremolo chops the level in pulses, so watch the meter for a while instead of one look
+  let level = 0;
+  for (let k = 0; k < 40 && level <= 5; k++) { await sleep(150); level = Math.max(level, await outLevel(p)); }
+  expect(level > 5, `no sound through the new pedals (engine load ${await p.textContent('#cpu-val')})`);
+  const subs = await p.$$eval('#chain .pedal.digital .pedal-sub', (els) => els.map((e) => e.textContent));
+  expect(subs.length === 4 && subs.every((t) => t === 'Digital model'), `digital labels: ${subs.join(', ')}`);
+  const builds = await p.$$eval('#lib-cols .lib-card', (cards) => cards.filter((c) => /Digital model/.test(c.textContent)).map((c) => c.querySelectorAll('.text-btn').length));
+  expect(builds.length === 4 && builds.every((n) => n === 0), 'a digital model offers "Build it"');
+  return p;
+});
+
+check('the ambient starter board loads delay and reverb', async (b) => {
+  const p = await openPage(b);
+  await p.click('#presets-all');
+  await p.click('.preset[data-preset="ambient"]');
+  await p.waitForFunction(() => document.querySelectorAll('#chain .pedal').length === 3);
+  expect((await names(p)).join() === 'Blues OD,Analog Delay,Reverb', `board is ${(await names(p)).join()}`);
+  return p;
+});
+
 check('two quick board clicks never mix two boards', async (b) => {
   const p = await openPage(b);
   const ids = await p.$$eval('.preset[data-preset]', (els) => els.map((e) => e.dataset.preset));
@@ -296,9 +323,48 @@ check('build sheet opens with a parts list', async (b) => {
 check('digital guitar pads make sound', async (b) => {
   const p = await openPage(b);
   await p.click('.seg [data-src=digital]');
-  await p.click('#digital-deck .pad >> nth=0');
-  await sleep(1500);
-  expect(await outLevel(p) > 5, 'pads made no sound');
+  // the first strum also downloads the notes, so on a busy machine the sound can take a moment
+  let level = 0;
+  for (let i = 0; i < 4 && level <= 5; i++) {
+    await p.click('#digital-deck .pad >> nth=0');
+    for (let k = 0; k < 10 && level <= 5; k++) { await sleep(150); level = Math.max(level, await outLevel(p)); }
+  }
+  expect(level > 5, 'pads made no sound');
+  // chord pages: each page has its own pads, and the number keys play the page shown
+  await p.click('#digital-deck .chord-sets [data-set=sevenths]');
+  const names = await p.$$eval('#digital-deck .pad b', (els) => els.map((e) => e.textContent));
+  expect(names.includes('E7') && names.includes('Cmaj7') && !names.includes('Em'), `7ths page shows ${names.join(' ')}`);
+  await p.keyboard.press('1');
+  expect(await p.$eval('#digital-deck .pad.on b', (e) => e.textContent) === 'E7', 'key 1 did not play the first pad of the page');
+  return p;
+});
+
+check('knob help appears below the pedal, never over its move and remove buttons', async (b) => {
+  const p = await openPage(b);
+  await p.$eval('#board', (e) => e.scrollIntoView());
+  await sleep(600);
+  const k = await (await p.$('#chain .pedal .knob')).boundingBox();
+  await p.mouse.move(k.x + k.width / 2, k.y + k.height / 2);
+  await p.waitForSelector('#tip:not([hidden])', { timeout: 3000 });
+  const tip = await (await p.$('#tip')).boundingBox();
+  const tools = await (await p.$('#chain .pedal .pedal-tools')).boundingBox();
+  const pedal = await (await p.$('#chain .pedal')).boundingBox();
+  const overlap = (a, c) => a.x < c.x + c.width && c.x < a.x + a.width && a.y < c.y + c.height && c.y < a.y + a.height;
+  expect(!overlap(tip, tools), 'the tip covers the pedal tools');
+  expect(!overlap(tip, pedal), 'the tip covers the pedal');
+  return p;
+});
+
+check('live numbers never change the height of the Input panel', async (b) => {
+  const p = await openPage(b);
+  const heights = await p.evaluate(() => {
+    const g = document.getElementById('in-gain-val'), v = document.getElementById('in-volts'), out = new Set();
+    const panel = document.getElementById('input-group');
+    for (const t of ['0 dB', '+9.5 dB', '+12.5 dB', '-12.5 dB', '+40 dB']) { g.textContent = t; out.add(panel.getBoundingClientRect().height); }
+    for (const t of ['— mV', '8 mV', '123 mV', '1.23 V']) { v.textContent = t; out.add(panel.getBoundingClientRect().height); }
+    return [...out];
+  });
+  expect(heights.length === 1, `panel height changed: ${heights.join(', ')}`);
   return p;
 });
 
@@ -384,6 +450,7 @@ check('Record a riff: start, stop, and it downloads the recording', async (b) =>
 check('Save a test clip downloads a WAV of the raw guitar', async (b) => {
   const p = await openPage(b);
   await p.click('.seg [data-src=live]');
+  await p.click('#live-more summary'); // the cleanup tools sit in the folded "Cleanup and delay" section
   const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 20000 }), p.click('#cleanup-clip')]);
   expect(/^guitar-test-clip-\d+\.wav$/.test(dl.suggestedFilename()), dl.suggestedFilename());
   const size = fs.statSync(await dl.path()).size;

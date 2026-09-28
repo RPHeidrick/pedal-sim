@@ -146,6 +146,18 @@ function renderLatency() {
   if (audio.ctx) $('audio-format').textContent = `${(audio.ctx.sampleRate / 1000).toFixed(1).replace('.0', '')} kHz · 32-bit float`;
   $('audio-quality').textContent = `${$('latency').dataset.quality || ''}${lat ? ` · ${lat.toFixed(0)} ms delay` : ''}`;
   $('latency').title = 'Sample rate and precision of the audio path, oversampling used for the circuits, and the delay from input to output.';
+  // the Guitar tab's own delay line, plus a tip when the guitar cable and the headphones run
+  // at different sample rates (the browser then has to convert, which adds a little delay)
+  if (audio.sourceKind === 'live' && audio.stream && lat) {
+    $('live-delay').textContent = `about ${lat.toFixed(0)} ms`;
+    const inRate = audio.inputSettings().sampleRate, outRate = audio.ctx.sampleRate;
+    const hint = $('live-delay-hint');
+    hint.hidden = !(inRate && inRate !== outRate);
+    if (!hint.hidden) hint.textContent = `Your guitar input runs at ${inRate / 1000} kHz and your output at ${outRate / 1000} kHz. Setting both to ${outRate / 1000} kHz in your computer's sound settings saves a conversion step.`;
+  } else {
+    $('live-delay').textContent = '—';
+    $('live-delay-hint').hidden = true;
+  }
 }
 
 // --- engine choice ------------------------------------------------------------------------------
@@ -203,7 +215,9 @@ const meterPct = (peak) => {
   return Math.max(0, Math.min(100, ((db + 48) / 48) * 100));
 };
 let overloadWarned = false, overload = 0, limitHold = 0, limitWorst = 0;
+let statCount = 0;
 audio.onStats = (s) => {
+  if (++statCount % 10 === 1) renderLatency(); // about once a second: the delay can change as devices settle
   // input meters show the level the pedals get (after the input level), like the samples at 0 dB
   const inLevel = s.inVolts / IN_VOLTS_FS;
   $('in-meter').style.width = `${meterPct(inLevel)}%`;

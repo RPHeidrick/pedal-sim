@@ -9,6 +9,7 @@
 import fs from 'node:fs';
 import { loadNetlist } from '../engine/parsers/elaborate.js';
 import { STARTER_PEDALS } from '../circuits/index.js';
+import { dspById, dspDesc } from '../site/audio/dsp-effects.js';
 import { PRESETS } from '../site/board/presets.js';
 import { SAMPLES } from '../site/inputs/samples.js';
 
@@ -57,7 +58,8 @@ for (const preset of PRESETS) {
   preset.pedals.forEach((pp, uid) => {
     const variants = STARTER_PEDALS.filter((p) => p.family === pp.key || p.id === pp.key);
     const v = variants[pp.variant || 0];
-    const desc = loadNetlist(fs.readFileSync(new URL(`../circuits/${v.file}`, import.meta.url), 'utf8'), { fileName: v.file });
+    const desc = dspById(pp.key) ? dspDesc(pp.key) // a digital model
+      : loadNetlist(fs.readFileSync(new URL(`../circuits/${v.file}`, import.meta.url), 'utf8'), { fileName: v.file });
     c.onMessage({ type: 'add', uid, desc, controls: desc.controls.map((k) => (pp.values[k.label] ?? k.value)), bypass: false });
   });
   let peak = 0;

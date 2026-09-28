@@ -9,6 +9,9 @@
  */
 import { DEFAULT_SAMPLE, loadSample, prefetchSample } from '../inputs/samples.js';
 
+/** Safety limiter look-ahead in seconds (see Limiter in pedal-worklet.js). */
+export const LIMITER_LOOKAHEAD = 0.0006;
+
 export class AudioEngine {
   constructor() {
     this.ctx = null;
@@ -35,10 +38,14 @@ export class AudioEngine {
       // Run at the sound card's own rate when it is 44.1 or 48 kHz, so the browser never
       // has to resample the output (resampling softens the top end a little). Rates above
       // 48 kHz only cost processing power here, so those run at 48 kHz.
-      this.ctx = new AudioContext({ latencyHint: 'interactive' });
+      // Fastest response asks the browser for its smallest sound card buffer (0 = "as small
+      // as you can"): the lowest delay for a live guitar, at some risk of crackles on a slow
+      // computer. Steady uses the browser's normal interactive buffer.
+      const latencyHint = this.lowLatency ? 0 : 'interactive';
+      this.ctx = new AudioContext({ latencyHint });
       if (this.ctx.sampleRate > 48000 || this.ctx.sampleRate < 44100) {
         await this.ctx.close();
-        this.ctx = new AudioContext({ latencyHint: 'interactive', sampleRate: 48000 });
+        this.ctx = new AudioContext({ latencyHint, sampleRate: 48000 });
       }
       await this.ctx.audioWorklet.addModule(new URL('./pedal-worklet.js', import.meta.url));
       this.node = new AudioWorkletNode(this.ctx, 'pedal-chain', {
@@ -222,10 +229,21 @@ export class AudioEngine {
     return all.filter((d) => d.kind === 'audioinput');
   }
 
-  /** Round trip latency estimate in ms (device buffers + oversampling filters). */
+  /**
+   * Delay estimate in ms from the input to your ears: the input device's buffer (live
+   * guitar only, when the browser reports it), the sound card output buffers, the
+   * oversampling filters and the safety limiter's look-ahead.
+   */
   latencyMs(oversampleLatencySamples = 0) {
     if (!this.ctx) return null;
-    const dev = (this.ctx.baseLatency || 0) + (this.ctx.outputLatency || 0);
-    return (dev + oversampleLatencySamples / this.ctx.sampleRate) * 1000;
+    const out = (this.ctx.baseLatency || 0) + (this.ctx.outputLatency || 0);
+    const input = this.sourceKind === 'live' ? (this.inputSettings().latency || 0) : 0;
+    return (input + out + (oversampleLatencySamples + LIMITER_LOOKAHEAD * this.ctx.sampleRate) / this.ctx.sampleRate) * 1000;
+  }
+
+  /** What the browser reports about the live input: {sampleRate?, latency?} */
+  inputSettings() {
+    const t = this.stream && this.stream.getAudioTracks()[0];
+    try { return (t && t.getSettings()) || {}; } catch { return {}; }
   }
 }

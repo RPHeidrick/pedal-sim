@@ -142,3 +142,14 @@ test('test clip WAV: valid 32-bit float header and the exact samples', () => {
   assert.equal(v.getUint32(24, true), 48000);
   assert.deepEqual([0, 1, 2, 3].map((i) => v.getFloat32(44 + i * 4, true)), [0, 0.5, -0.25, 1]);
 });
+
+test('hiss reducer: treble hiss under quiet playing drops, bright playing passes', () => {
+  const hissy = Float64Array.from({ length: FS * 2 }, () => rnd() * 6e-4);
+  const run = (x, hiss) => { const c = new InputCleanup(FS); c.configure({ humHz: 0, harmonics: [], gate: 'off', gateDb: rec.cleanup.gateDb, hiss }); const y = Float64Array.from(x); c.process(y, y.length); return y; };
+  const hp = (x) => { let lo = 0; const a = Math.exp((-2 * Math.PI * 4000) / FS); return x.map((v) => { lo = v + (lo - v) * a; return v - lo; }); };
+  const off = rmsDb(hp(run(hissy, false)).subarray(FS)), on = rmsDb(hp(run(hissy, true)).subarray(FS));
+  assert.ok(off - on >= 6, `treble hiss ${off.toFixed(1)} -> ${on.toFixed(1)} dB`);
+  const bright = Float64Array.from({ length: FS }, (_, i) => 0.05 * Math.sin(2 * Math.PI * 4000 * i / FS));
+  const a = toneAmplitude(run(bright, true).subarray(FS / 2), 4000, FS), b = toneAmplitude(run(bright, false).subarray(FS / 2), 4000, FS);
+  assert.ok(Math.abs(20 * Math.log10(a / b)) < 0.3, `a bright note changed by ${(20 * Math.log10(a / b)).toFixed(2)} dB`);
+});

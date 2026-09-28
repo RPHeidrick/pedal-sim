@@ -4,12 +4,13 @@
  */
 import { $, didThing, hooks, tourActive } from '../core.js';
 import { EFFECT_TYPES, KNOB_ROLES } from '../../circuits/index.js';
-import { entries, typeName } from './library.js';
+import { entries, typeName, isDigital } from './library.js';
 import { addPedal, markDirty } from './chain.js';
 
 const COLUMNS = [
   { cat: 'gain', title: 'Gain & fuzz' },
   { cat: 'modulation', title: 'Modulation' },
+  { cat: 'time', title: 'Delay & reverb' },
   { cat: 'filter', title: 'Filter & tone' },
 ];
 
@@ -25,7 +26,7 @@ export function renderLibrary() {
     if (!items.length) {
       const empty = document.createElement('p');
       empty.className = 'lib-empty';
-      empty.textContent = 'In development: chorus, phaser and tremolo circuits are next on the bench.';
+      empty.textContent = 'More coming soon.';
       sec.append(empty);
     }
     for (const e of items) sec.append(libraryCard(e));
@@ -42,16 +43,19 @@ function libraryCard(e) {
     <div class="lib-body">
       <div class="lib-title"><h4></h4><span class="fx-chip"></span><span class="badge"></span></div>
       <p class="lib-sounds"></p>
-      <p class="lib-blurb"></p>
+      <details class="lib-more"><summary>More</summary><p class="lib-blurb"></p></details>
     </div>
     <div class="lib-actions"></div>`;
   card.querySelector('h4').textContent = e.name;
   const badge = card.querySelector('.badge');
-  badge.textContent = e.origin === 'original' ? 'My design' : e.origin === 'custom' ? 'My creation' : 'Classic';
+  badge.textContent = e.origin === 'original' ? 'My design' : e.origin === 'custom' ? 'My creation' : isDigital(e) ? 'Digital model' : 'Classic';
   badge.classList.toggle('mine', e.origin === 'original' || e.origin === 'custom');
+  badge.classList.toggle('digital', isDigital(e));
   card.querySelector('.fx-chip').textContent = typeName(e.type);
   card.querySelector('.lib-sounds').textContent = e.sounds || '';
   card.querySelector('.lib-blurb').textContent = e.blurb;
+  // pedals without a one line sound description show their blurb straight away
+  if (!e.sounds) { const more = card.querySelector('.lib-more'); more.replaceWith(more.querySelector('.lib-blurb')); }
 
   const addBtn = document.createElement('button');
   addBtn.className = 'add';
@@ -67,7 +71,8 @@ function libraryCard(e) {
   build.textContent = 'Build it';
   build.title = `Parts list, schematic, wiring and drill template for ${e.name}`;
   build.addEventListener('click', () => hooks.openBuild(e, 0));
-  card.querySelector('.lib-actions').append(addBtn, build);
+  card.querySelector('.lib-actions').append(addBtn);
+  if (!isDigital(e)) card.querySelector('.lib-actions').append(build); // a digital model has no circuit to build
   return card;
 }
 

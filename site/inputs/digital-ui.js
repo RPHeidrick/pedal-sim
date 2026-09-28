@@ -1,14 +1,17 @@
 /**
  * The Digital guitar deck under the pedalboard: chord pads, Auto strum and a fretboard.
- * Keys: 1 to 9, 0, - and = strum the pads; Space starts or stops Auto strum.
+ * Chords come in pages (Open, 7ths, Sus & add, Barre & power) of at most 12 pads.
+ * Keys: 1 to 9, 0, - and = strum the pads on the page shown; Space starts or stops Auto strum.
  */
-import { DigitalGuitar, OPEN_STRINGS, FRETS, CHORDS, PATTERNS, PROGRESSIONS, noteName } from './digital.js';
+import { DigitalGuitar, OPEN_STRINGS, FRETS, CHORDS, CHORD_SETS, PATTERNS, PROGRESSIONS, noteName } from './digital.js';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='];
 
 export function mountDigitalDeck(root, { audio, ensureReady, onPlay }) {
   const gtr = new DigitalGuitar(audio);
-  let chord = CHORDS[5]; // Em
+  let chord = CHORDS.find((c) => c.id === 'Em');
+  let page = CHORD_SETS[0].id;
+  const onPage = () => CHORDS.filter((c) => c.set === page);
   let mute = false;
   root.innerHTML = `
     <div class="deck-head">
@@ -21,20 +24,37 @@ export function mountDigitalDeck(root, { audio, ensureReady, onPlay }) {
         <label class="check"><input type="checkbox" data-el="mute"> Palm mute</label>
       </div>
     </div>
+    <div class="chord-sets seg" role="tablist" aria-label="Chord pages"></div>
     <div class="pads" role="group" aria-label="Chords"></div>
     <div class="fretboard" role="group" aria-label="Fretboard: click a fret to play a note"></div>
-    <p class="hint deck-credit">Notes: FreePats "Electric Guitar FSBS (direct)", a single coil electric guitar recorded straight into an interface, public domain (CC0). Keys 1 to 9, 0, - and = strum the chords; Space starts Auto strum.</p>`;
+    <p class="hint deck-credit">Notes: FreePats "Electric Guitar FSBS (direct)", a single coil electric guitar recorded straight into an interface, public domain (CC0). Keys 1 to 9, 0, - and = strum the chords on the page shown (Shift for an up strum); Space starts Auto strum.</p>`;
   const $ = (s) => root.querySelector(s);
   const pads = $('.pads');
   const padEls = new Map();
-  CHORDS.forEach((c, i) => {
+  function drawPads() {
+    pads.replaceChildren(); padEls.clear();
+    onPage().forEach((c, i) => {
+      const b = document.createElement('button');
+      b.className = `pad${c.power ? ' power-chord' : ''}${c.id === chord.id ? ' on' : ''}`;
+      b.innerHTML = `<b>${c.name}</b><small>${c.kind}</small><kbd>${KEYS[i]}</kbd>`;
+      b.title = `${c.name}: click to strum (key ${KEYS[i]}, Shift for an up strum)`;
+      b.addEventListener('pointerdown', (e) => { e.preventDefault(); playChord(c, e.shiftKey ? 'U' : 'D'); });
+      pads.append(b); padEls.set(c.id, b);
+    });
+  }
+  const sets = $('.chord-sets');
+  for (const cs of CHORD_SETS) {
     const b = document.createElement('button');
-    b.className = `pad${c.power ? ' power-chord' : ''}`;
-    b.innerHTML = `<b>${c.name}</b><small>${c.power ? 'power' : /m$/.test(c.name) ? 'minor' : 'major'}</small><kbd>${KEYS[i]}</kbd>`;
-    b.title = `${c.name}: click to strum (key ${KEYS[i]})`;
-    b.addEventListener('pointerdown', (e) => { e.preventDefault(); playChord(c, e.shiftKey ? 'U' : 'D'); });
-    pads.append(b); padEls.set(c.id, b);
-  });
+    b.setAttribute('role', 'tab'); b.dataset.set = cs.id; b.textContent = cs.name;
+    b.setAttribute('aria-selected', String(cs.id === page));
+    b.addEventListener('click', () => {
+      page = cs.id;
+      sets.querySelectorAll('button').forEach((x) => x.setAttribute('aria-selected', String(x.dataset.set === page)));
+      drawPads();
+    });
+    sets.append(b);
+  }
+  drawPads();
   const sel = (el, list) => { for (const x of list) el.append(new Option(x.name, x.id)); };
   sel($('[data-el=pattern]'), PATTERNS);
   sel($('[data-el=prog]'), PROGRESSIONS);
@@ -84,7 +104,8 @@ export function mountDigitalDeck(root, { audio, ensureReady, onPlay }) {
   async function playChord(c, dir = 'D') {
     chord = c;
     padEls.forEach((b, id) => b.classList.toggle('on', id === c.id));
-    const b = padEls.get(c.id); b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
+    const b = padEls.get(c.id);
+    if (b) { b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit'); }
     if (!(await ready())) return;
     if (!gtr.rhythmOn) gtr.strum(c, { dir, mute });
   }
@@ -115,7 +136,8 @@ export function mountDigitalDeck(root, { audio, ensureReady, onPlay }) {
     if (root.hidden || e.target.closest('input, select, textarea, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
     if (document.querySelector('dialog[open], .tour-card')) return;
     const i = KEYS.indexOf(e.key);
-    if (i >= 0) { e.preventDefault(); playChord(CHORDS[i], e.shiftKey ? 'U' : 'D'); }
+    const c = i >= 0 && onPage()[i];
+    if (c) { e.preventDefault(); playChord(c, e.shiftKey ? 'U' : 'D'); }
     else if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); toggleRhythm(); }
   };
   document.addEventListener('keydown', onKey);

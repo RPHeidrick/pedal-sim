@@ -1,0 +1,45 @@
+* JFET tremolo (generic circuit: a triangle wave LFO turns a JFET on and off across the signal)
+*@pedal name="Tremolo" oversample="1"
+*@pot XRATE label="Rate"
+*@pot XDEPTH label="Depth"
+*@pot XVOL label="Volume"
+V1 vcc 0 9
+Vin in 0 0
+* 4.5 V reference
+R1 vcc vref 47k
+R2 vref 0 47k
+C1 vref 0 47u
+* input buffer
+C2 in n1 100n
+R3 n1 vref 1Meg
+XU1 n1 s0 vcc 0 s0 TL072
+* the volume swell: 10k in series, then the JFET from the signal to the reference. When the
+* LFO turns the JFET on it shunts the guitar away; when it turns it off the guitar passes.
+R10 s0 a 10k
+J1 a g1 vref 2N5457
+R11 a vref 1Meg
+* output amp (x3, to make up for the average level the JFET takes away)
+XU2 a m2 vcc 0 s2 TL072
+R12 m2 vref 10k
+R13 m2 s2 20k
+C20 s2 vo 1u
+* LFO: integrator (XU3) and Schmitt trigger (XU4) make a slow triangle wave on "tri"
+XRATE rr rr sq pot R=2.5Meg taper=rlog rot=0.6
+R60 rr ni 100k
+C60 ni tri 470n
+XU3 vref ni vcc 0 tri LM358
+R61 tri sp 56k
+R62 sq sp 100k
+XU4 sp vref vcc 0 sqo LM358
+* 10k and 10n soften the square wave's edges a little (and keep the solver on one clean path)
+R63 sqo sq 10k
+C63 sq 0 10n
+* Depth: at zero the JFET gate sits below its turn-on point (no tremolo); turning it up lets
+* more of the triangle push the gate into the on region on every cycle
+XDEPTH vref dw tri pot R=100k taper=lin rot=0.6
+R70 dw g1r 100k
+R71 g1r 0 200k
+R72 g1r g1 1Meg
+* output level (listed last so the knobs read Rate, Depth, Volume)
+XVOL 0 out vo pot R=100k taper=log rot=0.6
+.end

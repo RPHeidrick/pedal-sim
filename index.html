@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="styles/play.css">
   <link rel="stylesheet" href="styles/workshop.css">
   <link rel="stylesheet" href="styles/build.css">
+  <link rel="stylesheet" href="styles/simple.css">
   <!-- Every script the page imports, listed so the browser downloads them all at once instead of
        discovering them one import at a time. tests/content.test.js checks this list is complete. -->
   <link rel="modulepreload" href="samples/mine/recordings.js">
@@ -32,6 +33,7 @@
   <link rel="modulepreload" href="engine/parsers/elaborate.js">
   <link rel="modulepreload" href="site/workshop/templates.js">
   <link rel="modulepreload" href="site/workshop/store.js">
+  <link rel="modulepreload" href="site/audio/dsp-effects.js">
   <link rel="modulepreload" href="site/board/library.js">
   <link rel="modulepreload" href="site/board/info-card.js">
   <link rel="modulepreload" href="site/board/zoom.js">
@@ -86,13 +88,12 @@
     <section class="hero">
       <div class="tubes" aria-hidden="true"><i class="tube"></i><i class="tube"></i><i class="tube"></i></div>
       <div class="hero-text">
-        <p class="eyebrow">Circuit level guitar effects</p>
         <h1>Real pedal circuits, <em>played live</em> in your browser.</h1>
-        <p class="lede">Every sound here is solved from the actual schematic, transistor by transistor, up to 192,000 times a second. Hear what guitar effects do with real guitar recordings, build a chain, and turn the knobs. No guitar needed.</p>
-        <div class="hero-actions">
-          <button id="tour-start" class="btn-primary">New to effects? Start the guide</button>
-          <a href="#presets" class="btn-link">or jump to the starter boards</a>
-        </div>
+        <p class="lede">Every circuit is solved from its actual schematic as you play. No guitar needed.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="tour-start" class="btn-primary">New here? Start the guide</button>
+        <a href="#presets" class="btn-link">or try a starter board</a>
       </div>
     </section>
 
@@ -105,37 +106,44 @@
         </div>
         <div class="rack-mini" aria-hidden="true"><div class="meter vert"><div class="meter-fill" id="in-meter-mini"></div></div></div>
         <div class="seg" role="tablist" aria-label="Input source">
-          <button role="tab" data-src="sample" aria-selected="true">Samples</button>
-          <button role="tab" data-src="live" aria-selected="false">Guitar</button>
-          <button role="tab" data-src="digital" aria-selected="false" title="Play real recorded guitar notes with chord pads and a fretboard">Digital</button>
-          <button role="tab" data-src="file" aria-selected="false">File</button>
+          <button role="tab" data-src="sample" aria-selected="true"><svg class="tab-ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8h2l1.5-5 3 10 2.5-7 1.5 4H15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Samples</span></button>
+          <button role="tab" data-src="live" aria-selected="false"><svg class="tab-ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 1v4M11 1v4M3 5h10v3a5 5 0 0 1-10 0zM8 13v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your guitar</span></button>
+          <button role="tab" data-src="digital" aria-selected="false" title="Play real recorded guitar notes with chord pads and a fretboard"><svg class="tab-ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 4h14M1 8h14M1 12h14M5 2v12M10 2v12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Digital guitar</span></button>
+          <button role="tab" data-src="file" aria-selected="false"><svg class="tab-ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1h5l3 3v11H4zM9 1v3h3M6 11V8.5l4-1V10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Audio file</span></button>
         </div>
         <div class="src-extra" data-for="sample">
           <div class="sample-list" id="sample-list" role="radiogroup" aria-label="Sample sound"></div>
         </div>
         <div class="src-extra" data-for="live" hidden>
           <button class="btn-primary gs-open" id="gs-open">Plug in your guitar</button>
-          <p class="hint">Four quick steps: pick your cable or interface (USB guitar cables work), measure the noise and set the level, tune up, play.</p>
+          <p class="hint">A short walk through: cable, noise, level and tuning. Use headphones to avoid feedback.</p>
           <label class="field"><span>Interface / input</span><select id="device"><option value="">Default input</option></select></label>
           <div class="riff">
             <button class="btn-secondary riff-rec" id="riff-rec" aria-pressed="false"><span class="rec-dot" aria-hidden="true"></span><span class="riff-label">Record a riff</span></button>
-            <p class="hint" id="riff-hint">Up to 60 seconds of your guitar, cleaned up, saved as a WAV file in your Downloads folder.</p>
+            <p class="hint" id="riff-hint">Up to 60 seconds of your guitar, saved as a WAV file.</p>
           </div>
-          <div class="cleanup" id="cleanup">
-            <div class="cleanup-head">
-              <label class="check"><input type="checkbox" id="cleanup-on" checked> Clean up the signal</label>
-              <span class="gate-led" id="gate-led" title="Noise gate: lit while it hears you playing"></span>
+          <details class="more" id="live-more">
+            <summary>Cleanup and delay <span class="gate-led" id="gate-led" title="Noise gate: lit while it hears you playing"></span></summary>
+            <div class="more-body">
+              <div class="cleanup" id="cleanup">
+                <label class="check"><input type="checkbox" id="cleanup-on" checked> Clean up the signal</label>
+                <p class="hint" id="cleanup-summary">Removes rumble and hiss. Run the noise check to remove hum too.</p>
+                <label class="field"><span>Noise gate</span><select id="cleanup-gate">
+                  <option value="off">Off</option><option value="light">Light (−12 dB)</option><option value="medium">Medium (−24 dB)</option><option value="strong">Strong (−48 dB)</option>
+                </select></label>
+                <label class="check" title="Turns down only the treble hiss while you play quietly or a note fades. Pick attacks and bright chords pass untouched."><input type="checkbox" id="cleanup-hiss" checked> Reduce hiss while playing</label>
+                <div class="cleanup-actions">
+                  <button class="text-btn" id="cleanup-check" title="Measure the noise, hum and level again">Check noise and level</button>
+                  <button class="text-btn" id="cleanup-clip" title="Record 10 seconds of the raw guitar signal as a WAV file, to look at the noise in detail">Save a test clip</button>
+                </div>
+              </div>
+              <label class="field"><span>Response</span><select id="response" aria-describedby="live-delay-line">
+                <option value="fast">Fastest (lowest delay)</option><option value="steady">Steady (if you hear crackles)</option>
+              </select></label>
+              <p class="readout mono stat-line" id="live-delay-line" title="Time from plucking the string to hearing it: input buffer, sound card buffer and processing. Under about 15 ms feels instant; 20 to 30 ms is typical for a USB guitar cable on Windows."><span>Delay</span><output id="live-delay">—</output></p>
+              <p class="hint" id="live-delay-hint" hidden></p>
             </div>
-            <p class="hint" id="cleanup-summary">Removes rumble and hiss. Run the noise check to remove hum too.</p>
-            <label class="field"><span>Noise gate</span><select id="cleanup-gate">
-              <option value="off">Off</option><option value="light">Light (−12 dB)</option><option value="medium">Medium (−24 dB)</option><option value="strong">Strong (−48 dB)</option>
-            </select></label>
-            <div class="cleanup-actions">
-              <button class="text-btn" id="cleanup-check" title="Measure the noise, hum and level again">Check noise and level</button>
-              <button class="text-btn" id="cleanup-clip" title="Record 10 seconds of the raw guitar signal as a WAV file, to look at the noise in detail">Save a test clip</button>
-            </div>
-          </div>
-          <p class="hint">Use headphones to avoid feedback.</p>
+          </details>
         </div>
         <div class="src-extra" data-for="digital" hidden>
           <p class="hint">No guitar? Play one here. Chord pads, Auto strum and a fretboard sit just under the pedalboard.</p>
@@ -151,8 +159,8 @@
             <input id="in-gain" type="range" min="-18" max="40" step="0.5" value="0" aria-describedby="in-hint">
           </label>
           <div class="meter" aria-hidden="true"><div class="meter-fill" id="in-meter"></div></div>
-          <p class="readout mono stat-line" title="The peak voltage the guitar sends into the first pedal. A passive guitar pickup gives roughly 100 to 500 mV."><span>Into first pedal</span><output id="in-volts">— mV</output></p>
-          <p class="hint" id="in-hint">How hard the guitar hits the pedals. 0 dB is a typical guitar.</p>
+          <p class="readout mono stat-line" title="The peak voltage the guitar sends into the first pedal. A passive guitar pickup gives roughly 100 to 500 mV."><span>Into pedals</span><output id="in-volts">— mV</output></p>
+          <p class="hint" id="in-hint">How hard the guitar hits the pedals. 0 dB is typical.</p>
         </div>
       </div>
 
@@ -262,19 +270,26 @@
     <section id="library" class="library" aria-label="Pedal library">
       <div class="section-head">
         <h2 class="section-title">Pedal library</h2>
-        <p class="dim">My own pedal designs and classic reference circuits, simulated component by component. Add as many as your computer can run. Want to try your own? Load an LTspice schematic on the <a href="bench.html">engine bench</a>.</p>
+        <p class="dim">My own pedal designs and classic circuits, simulated part by part. Click Add to put one on the board.</p>
       </div>
-      <div class="fx-types" id="fx-types" aria-label="Kinds of effect"></div>
+      <details class="basics" id="basics">
+        <summary>New to effects? The kinds of pedals, and what the knobs mean</summary>
+        <div class="fx-types" id="fx-types" aria-label="Kinds of effect"></div>
+      </details>
       <div class="lib-cols" id="lib-cols"></div>
     </section>
 
     <section id="how" class="how">
       <h2 class="section-title">How it works</h2>
       <ol class="steps">
-        <li><strong>Schematic in.</strong> Each pedal starts as an LTspice schematic. The importer reads the <code>.asc</code> file, traces the wires into a netlist, and turns swept resistors into knobs.</li>
-        <li><strong>Circuit solved.</strong> A modified nodal analysis engine models every resistor, capacitor, diode, transistor and op amp, and solves the nonlinear circuit with Newton iteration at up to eight times the audio rate, so distortion stays free of digital aliasing.</li>
-        <li><strong>Sound out.</strong> The solver runs on the browser's real-time audio thread, so your guitar goes through the circuit as you play. Knobs change the actual pot resistances, and a speaker cabinet model stands in for the amp.</li>
+        <li><strong>Schematic in.</strong> Each pedal starts as an LTspice schematic.
+          <details class="step-more"><summary>More</summary><p>The importer reads the <code>.asc</code> file, traces the wires into a netlist, and turns swept resistors into knobs.</p></details></li>
+        <li><strong>Circuit solved.</strong> Every part is modelled and solved as you play.
+          <details class="step-more"><summary>More</summary><p>A modified nodal analysis engine models every resistor, capacitor, diode, transistor and op amp, and solves the nonlinear circuit with Newton iteration at up to eight times the audio rate, so distortion stays free of digital aliasing.</p></details></li>
+        <li><strong>Sound out.</strong> Your guitar goes through the circuit in real time.
+          <details class="step-more"><summary>More</summary><p>The solver runs on the browser's real-time audio thread. Knobs change the actual pot resistances, and a speaker cabinet model stands in for the amp.</p></details></li>
       </ol>
+      <p class="dim">Chorus, flanger, delay and reverb are <strong>digital models</strong>, labeled as such: their analog versions depend on delay chips and springs that cannot be solved part by part in real time, so they copy the analog sound in software instead.</p>
       <p class="dim">Want the numbers? The <a href="bench.html">engine bench</a> shows operating points, transfer curves and harmonic distortion for any circuit, including your own LTspice files.</p>
     </section>
   </main>

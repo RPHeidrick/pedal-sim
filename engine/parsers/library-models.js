@@ -32,7 +32,7 @@ export const BUILTIN_MODELS = {
   // LTspice sim of his Reverse Parallel Fuzz (Ge side), which uses the 2N1309 model from his LTspice
   // component library (standard.bjt, the free library that ships with LTspice and is mirrored on
   // ltwiki.org). Fitted here from scratch: all three stages' Ic and Ib within 0.5% of that sim.
-  // Consistent with the Central Semiconductor datasheet (hFE >= 20 @ 10 mA, VCE(sat) 0.2 V).
+  // Consistent with the manufacturer's datasheet (hFE >= 20 @ 10 mA, VCE(sat) 0.2 V).
   '2n1309': M('PNP', { is: 1.707e-8, bf: 145.4, nf: 1.26, vaf: 35, ikf: 0.25, ise: 6.959e-9, ne: 1.748, br: 6, nr: 1.26, rb: 60, rc: 1.5, re: 0.5 }),
   '2n3906': M('PNP', { is: 1.41e-15, bf: 180.7, nf: 1, vaf: 18.7, ikf: 0.08, ise: 0, ne: 1.5, br: 4.977, nr: 1, rb: 10, rc: 2.5 }),
   '2n5088': M('NPN', { is: 5.911e-15, bf: 1122, nf: 1, vaf: 62.37, ikf: 0.0154, ise: 5.911e-15, ne: 1.394, br: 1.271, nr: 1, rb: 10, rc: 1.61 }),
